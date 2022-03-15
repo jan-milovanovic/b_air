@@ -1,7 +1,9 @@
+import 'package:b_air/pages/musicPlayer.dart';
 import 'package:flutter/material.dart';
 
 import 'pages/home.dart';
 import 'pages/radio.dart';
+import 'pages/contributors.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -11,7 +13,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final screens = [const Home(), const RadioZ()]; // todo add 3rd
+  final screens = [
+    const Home(),
+    const MusicPlayer(url: "http://mp3.rtvslo.si/raz"),
+    const Contributors()
+  ]; // todo add 3rd
 
   int currentIndex = 0;
 
@@ -22,13 +28,6 @@ class _HomePageState extends State<HomePage> {
         title: const Text('B AIR'),
         centerTitle: true,
         backgroundColor: Colors.grey.shade400,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.circle),
-            tooltip: 'Profile',
-            onPressed: () {},
-          )
-        ],
       ),
       body: screens[currentIndex],
       bottomNavigationBar: BottomNavigationBar(

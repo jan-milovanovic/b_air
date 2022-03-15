@@ -71,6 +71,11 @@ class Home extends StatelessWidget {
   // TODO: include audio data
   void playAudio(BuildContext context) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const MusicPlayer()));
+        context,
+        MaterialPageRoute(
+            builder: (context) => const MusicPlayer(
+                  url:
+                      "https://progressive.rtvslo.si/ava_archive11/2022/03/07/PravljicRA_SLO_5570251.mp3",
+                )));
   }
 }
