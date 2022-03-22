@@ -6,7 +6,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'audioplay/playerSeekbar.dart';
+import 'audioplay/player_seekbar.dart';
 
 class RadioPlayer extends StatefulWidget {
   const RadioPlayer({Key? key}) : super(key: key);
