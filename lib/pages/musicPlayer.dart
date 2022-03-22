@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
@@ -9,96 +8,6 @@ import 'package:rxdart/rxdart.dart';
 
 // common.dart
 import 'dart:math';
-
-/*
-class MusicPlayer extends StatelessWidget {
-  MusicPlayer({Key? key, required this.url}) : super(key: key);
-
-  final String url;
-  final player = AudioPlayer();
-
-  @override
-  Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: CustomPaint(
-        painter: Background(),
-        child: Container(
-          margin: const EdgeInsets.only(left: 50.0, right: 50.0),
-          child: Column(
-            //crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              songName(url),
-              SizedBox(height: height * 0.2),
-              songImage(),
-              SizedBox(height: height * 0.2),
-              audioController(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class Background extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final height = size.height;
-    final width = size.width;
-    Paint paint = Paint();
-
-    Path bottomColor = Path();
-    bottomColor.addRect(Rect.fromLTRB(0, height * 0.8, width, height));
-    //Rect.fromLTRB(left, top, right, bottom)
-    paint.color = Colors.grey.shade400;
-    canvas.drawPath(bottomColor, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
-
-// TODO: get songname
-Text songName(String title) {
-  return Text(title);
-}
-
-// TODO: get song image
-Image songImage() {
-  return const Image(image: AssetImage('assets/catTable.png'));
-}
-
-/// pause icon: pause, pause_circle, pause_circle_outline
-/// play icon: play_arrow, play_arrow_outlined, play_arrow_rounded, play_circle, play_circle_outlined
-/// skip next: skip_next, skip_next_outlined
-/// skip prev: skip_previous, skip_previous_outlined
-/// stop icon: stop, stop_circle, stop_circle_outlined
-Container audioController() {
-  return Container(
-    child: Column(
-      children: [
-        // get playtimebar
-        // get media plays
-        Row(
-          children: [
-            IconButton(icon: const Icon(Icons.playlist_play), onPressed: () {}),
-            IconButton(
-                icon: const Icon(Icons.playlist_remove), onPressed: () {}),
-          ],
-        )
-      ],
-    ),
-  );
-}
-
-*/
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
 
 class MusicPlayer extends StatefulWidget {
   final String url;
@@ -123,14 +32,18 @@ class _MusicPlayerState extends State<MusicPlayer> {
             "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg"),
       ),
     ),
-    AudioSource.uri(
-      Uri.parse("http://mp3.rtvslo.si/raz"),
+    ClippingAudioSource(
+      duration: Duration.zero,
       tag: MediaItem(
         id: '${_nextMediaId++}',
         album: "radioZ",
         title: "RTV RadioZ",
         artUri: Uri.parse(
             "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg"),
+      ),
+      child: HlsAudioSource(
+        Uri.parse(
+            "https://di-br2e5p7r.a.eurovisionflow.net/radiodvr/otp/playlist.m3u8"),
       ),
     ),
   ]);
