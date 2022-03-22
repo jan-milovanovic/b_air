@@ -6,7 +6,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'playerSeekbar.dart';
+import 'player_seekbar.dart';
 
 class MusicPlayer extends StatefulWidget {
   final String url;
@@ -258,6 +258,7 @@ class ControlButtons extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        /*
         IconButton(
           icon: const Icon(Icons.volume_up),
           onPressed: () {
@@ -271,7 +272,7 @@ class ControlButtons extends StatelessWidget {
               onChanged: player.setVolume,
             );
           },
-        ),
+        ),*/
         StreamBuilder<SequenceState?>(
           stream: player.sequenceStateStream,
           builder: (context, snapshot) => IconButton(
@@ -322,6 +323,7 @@ class ControlButtons extends StatelessWidget {
             onPressed: player.hasNext ? player.seekToNext : null,
           ),
         ),
+        /*
         StreamBuilder<double>(
           stream: player.speedStream,
           builder: (context, snapshot) => IconButton(
@@ -339,7 +341,7 @@ class ControlButtons extends StatelessWidget {
               );
             },
           ),
-        ),
+        ),*/
       ],
     );
   }

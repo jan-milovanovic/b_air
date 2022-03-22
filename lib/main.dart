@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
-import 'loginPage.dart';
+import 'login_page.dart';
 
 Future<void> main() async {
   await JustAudioBackground.init(
