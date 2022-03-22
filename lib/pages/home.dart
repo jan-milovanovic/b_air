@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'musicPlayer.dart';
+import 'audioplay/musicPlayer.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);

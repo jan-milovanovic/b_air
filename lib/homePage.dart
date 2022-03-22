@@ -1,6 +1,4 @@
-import 'package:b_air/pages/musicPlayer.dart';
 import 'package:flutter/material.dart';
-
 import 'pages/home.dart';
 import 'pages/radio.dart';
 import 'pages/contributors.dart';
@@ -15,7 +13,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final screens = [
     const Home(),
-    const MusicPlayer(url: "http://mp3.rtvslo.si/raz"),
+    const RadioPlayer(),
     const Contributors()
   ]; // todo add 3rd
 
