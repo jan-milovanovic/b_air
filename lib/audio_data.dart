@@ -24,7 +24,7 @@ class AudioData {
 
   factory AudioData.fromJson(Map<String, dynamic> json) {
     return AudioData(
-      imageUrl: json['response']['recordings'][0]['podcast_thumbnail'],
+      imageUrl: json['response']['recordings'][0]['podcast_thumbnail']['md'],
       title: json['response']['recordings'][0]['title'],
       url: json['response']['recordings'][0]['link'],
     );
