@@ -7,9 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'audioplay/player_seekbar.dart';
+import 'audioplay/control_buttons.dart';
+import '../audio_data.dart';
 
 class RadioPlayer extends StatefulWidget {
-  const RadioPlayer({Key? key}) : super(key: key);
+  const RadioPlayer({Key? key, required this.audioData}) : super(key: key);
+
+  final AudioData audioData;
 
   @override
   _RadioState createState() => _RadioState();
@@ -17,6 +21,8 @@ class RadioPlayer extends StatefulWidget {
 
 class _RadioState extends State<RadioPlayer> {
   late AudioPlayer _player;
+
+/*
   final _playlist = HlsAudioSource(
     Uri.parse(
         "https://di-br2e5p7r.a.eurovisionflow.net/radiodvr/otp/playlist.m3u8"),
@@ -28,6 +34,7 @@ class _RadioState extends State<RadioPlayer> {
           "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg"),
     ),
   );
+*/
 
   @override
   void initState() {
@@ -48,7 +55,31 @@ class _RadioState extends State<RadioPlayer> {
       //print('A stream error occurred: $e');
     });
     try {
-      await _player.setAudioSource(_playlist);
+      final AudioSource audio;
+
+      /// HLS stream
+      if (widget.audioData.url.endsWith(".m3u8")) {
+        audio = HlsAudioSource(
+          Uri.parse(widget.audioData.url),
+          tag: MediaItem(
+            id: '0',
+            title: widget.audioData.title,
+            artUri: Uri.parse(widget.audioData.imageUrl),
+          ),
+        );
+      } else {
+        /// regular media file
+        audio = ProgressiveAudioSource(
+          Uri.parse(widget.audioData.url),
+          tag: MediaItem(
+            id: '0',
+            title: widget.audioData.title,
+            artUri: Uri.parse(widget.audioData.imageUrl),
+          ),
+        );
+      }
+
+      await _player.setAudioSource(audio);
     } catch (e, stackTrace) {
       // TODO: Catch load errors: 404, invalid url ...
       //print("Error loading playlist: $e");
@@ -100,9 +131,11 @@ class _RadioState extends State<RadioPlayer> {
                                     Image.network(metadata.artUri.toString())),
                           ),
                         ),
-                        Text(metadata.album!,
+                        /*Text(metadata.album!,
                             style: Theme.of(context).textTheme.headline6),
-                        Text(metadata.title),
+                        Text(metadata.title),*/
+                        Text(metadata.title,
+                            style: Theme.of(context).textTheme.headline6),
                       ],
                     );
                   },
@@ -129,57 +162,6 @@ class _RadioState extends State<RadioPlayer> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class ControlButtons extends StatelessWidget {
-  final AudioPlayer player;
-
-  const ControlButtons(this.player, {Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        StreamBuilder<PlayerState>(
-          stream: player.playerStateStream,
-          builder: (context, snapshot) {
-            final playerState = snapshot.data;
-            final processingState = playerState?.processingState;
-            final playing = playerState?.playing;
-            if (processingState == ProcessingState.loading ||
-                processingState == ProcessingState.buffering) {
-              return Container(
-                margin: const EdgeInsets.all(8.0),
-                width: 64.0,
-                height: 64.0,
-                child: const CircularProgressIndicator(),
-              );
-            } else if (playing != true) {
-              return IconButton(
-                icon: const Icon(Icons.play_arrow),
-                iconSize: 64.0,
-                onPressed: player.play,
-              );
-            } else if (processingState != ProcessingState.completed) {
-              return IconButton(
-                icon: const Icon(Icons.pause),
-                iconSize: 64.0,
-                onPressed: player.pause,
-              );
-            } else {
-              return IconButton(
-                icon: const Icon(Icons.replay),
-                iconSize: 64.0,
-                onPressed: () => player.seek(Duration.zero,
-                    index: player.effectiveIndices!.first),
-              );
-            }
-          },
-        ),
-      ],
     );
   }
 }

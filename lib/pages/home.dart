@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'audioplay/music_player.dart';
+import 'radio.dart';
 import '../audio_data.dart';
 
 class Home extends StatefulWidget {
@@ -41,7 +41,8 @@ class _HomeState extends State<Home> {
                     icon: Image.asset('assets/catTable.png'),
                     iconSize: 100,
                     onPressed: () {
-                      playAudio(context);
+                      null;
+                      //playAudio(context);
                     },
                   ),
                   TextButton(
@@ -91,7 +92,7 @@ class _HomeState extends State<Home> {
                                     snapshot.data![index].imageUrl),
                                 iconSize: 100,
                                 onPressed: () {
-                                  playAudio(context);
+                                  playAudio(context, snapshot.data![index]);
                                 }),
                             Text(snapshot.data![index].title),
                           ]);
@@ -105,13 +106,10 @@ class _HomeState extends State<Home> {
   }
 
 // TODO: include audio data
-  void playAudio(BuildContext context) {
+  void playAudio(BuildContext context, AudioData audioData) {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => const MusicPlayer(
-                  url:
-                      "https://progressive.rtvslo.si/ava_archive11/2022/03/07/PravljicRA_SLO_5570251.mp3",
-                )));
+            builder: (context) => RadioPlayer(audioData: audioData)));
   }
 }
