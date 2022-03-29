@@ -5,10 +5,13 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import 'audioplay/player_seekbar.dart';
 import 'audioplay/control_buttons.dart';
 import '../audio_data.dart';
+import '../auth/secrets.dart' as secret;
 
 class RadioPlayer extends StatefulWidget {
   const RadioPlayer({Key? key, required this.audioData}) : super(key: key);
@@ -21,20 +24,6 @@ class RadioPlayer extends StatefulWidget {
 
 class _RadioState extends State<RadioPlayer> {
   late AudioPlayer _player;
-
-/*
-  final _playlist = HlsAudioSource(
-    Uri.parse(
-        "https://di-br2e5p7r.a.eurovisionflow.net/radiodvr/otp/playlist.m3u8"),
-    tag: MediaItem(
-      id: '0',
-      album: "radioZ",
-      title: "RTV RadioZ",
-      artUri: Uri.parse(
-          "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg"),
-    ),
-  );
-*/
 
   @override
   void initState() {
@@ -67,10 +56,42 @@ class _RadioState extends State<RadioPlayer> {
             artUri: Uri.parse(widget.audioData.imageUrl),
           ),
         );
-      } else {
+      } else if (widget.audioData.url.endsWith(".mp3")) {
         /// regular media file
         audio = ProgressiveAudioSource(
           Uri.parse(widget.audioData.url),
+          tag: MediaItem(
+            id: '0',
+            title: widget.audioData.title,
+            artUri: Uri.parse(widget.audioData.imageUrl),
+          ),
+        );
+      } else {
+        // fetch jwt key
+        final responseJWT = await http.get(Uri.parse(
+            'https://api.rtvslo.si/ava/getRecordingDrm/${widget.audioData.id}?client_id=${secret.clientId}'));
+
+        if (responseJWT.statusCode != 200) {
+          throw Exception(
+              'Failed to load website for title: ${widget.audioData.title}, link: ${widget.audioData.url}');
+        }
+
+        final String jwt = json.decode(responseJWT.body)['response']['jwt'];
+
+        // fetch mp3 file
+        final responseMP3 = await http.get(Uri.parse(
+            'https://api.rtvslo.si/ava/getMedia/${widget.audioData.id}?client_id=${secret.clientId}&jwt=${jwt}'));
+
+        if (responseMP3.statusCode != 200) {
+          throw Exception(
+              'Failed to load website for title: ${widget.audioData.title}, link: ${widget.audioData.url}');
+        }
+
+        var mp3 = json.decode(responseMP3.body);
+        mp3 = mp3['response']['mediaFiles'][0]['streams']['https'];
+
+        audio = ProgressiveAudioSource(
+          Uri.parse(mp3),
           tag: MediaItem(
             id: '0',
             title: widget.audioData.title,
