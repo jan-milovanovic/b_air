@@ -22,6 +22,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    final iconSize = height / 7;
 
     return Scaffold(
       body: ListView(
@@ -32,7 +33,7 @@ class _HomeState extends State<Home> {
             textScaleFactor: 2,
           ),
           SizedBox(
-              height: height / 4,
+              height: height / 3,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
@@ -58,7 +59,7 @@ class _HomeState extends State<Home> {
             textScaleFactor: 2,
           ),
           SizedBox(
-              height: height / 4,
+              height: height / 3,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: const [
@@ -71,7 +72,7 @@ class _HomeState extends State<Home> {
             textScaleFactor: 2,
           ),
           SizedBox(
-            height: height / 4,
+            height: height / 3,
             child: FutureBuilder<List<AudioData>>(
                 future: futureAudioData,
                 builder: ((context, snapshot) {
@@ -86,16 +87,21 @@ class _HomeState extends State<Home> {
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.fromLTRB(5, 20, 5, 0),
                         itemBuilder: (BuildContext context, int index) {
-                          return Column(children: [
-                            IconButton(
-                                icon: Image.network(
-                                    snapshot.data![index].imageUrl),
-                                iconSize: 100,
-                                onPressed: () {
-                                  playAudio(context, snapshot.data![index]);
-                                }),
-                            Text(snapshot.data![index].title),
-                          ]);
+                          return SizedBox(
+                              width: iconSize,
+                              child: Column(children: [
+                                IconButton(
+                                    icon: Image.network(
+                                        snapshot.data![index].imageUrl),
+                                    iconSize: iconSize,
+                                    onPressed: () {
+                                      playAudio(context, snapshot.data![index]);
+                                    }),
+                                Text(
+                                  snapshot.data![index].title,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ]));
                         });
                   }
                 })),
