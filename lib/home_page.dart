@@ -18,12 +18,12 @@ class _HomePageState extends State<HomePage> {
     const RadioPlayer(
         audioData: AudioData(
             imageUrl:
-                'https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg',
+                'https://img.rtvslo.si/_up/upload/2020/04/30/65671496.jpg',
             title: "Radio Z",
             url:
                 'https://di-br2e5p7r.a.eurovisionflow.net/radiodvr/otp/playlist.m3u8')),
     const Contributors()
-  ]; // todo add 3rd
+  ];
 
   int currentIndex = 0;
 
@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('B AIR'),
+        title: const Text('PEDIATKO'),
         centerTitle: true,
         backgroundColor: Colors.grey.shade400,
       ),
@@ -45,7 +45,8 @@ class _HomePageState extends State<HomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.radio), label: 'Radio'),
-          BottomNavigationBarItem(icon: Icon(Icons.light), label: '?'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.info), label: 'Contributors'),
         ],
       ),
     );
