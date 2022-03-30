@@ -88,19 +88,42 @@ class _RadioState extends State<RadioPlayer> {
         }
 
         var mp3 = json.decode(responseMP3.body);
-        mp3 = mp3['response']['mediaFiles'][0]['streams']['https'];
+        mp3 = mp3['response']['mediaFiles'][0]['streams'];
 
-        audio = ProgressiveAudioSource(
-          Uri.parse(mp3),
-          tag: MediaItem(
-            id: '0',
-            title: widget.audioData.title,
-            artUri: Uri.parse(widget.audioData.imageUrl),
-          ),
-        );
+        // TODO: hls won't play
+        if (mp3['hls_sec'] != null) {
+          mp3 = mp3['hls_sec'];
+
+          audio = HlsAudioSource(
+            Uri.parse(mp3),
+            tag: MediaItem(
+              id: '0',
+              title: widget.audioData.title,
+              artUri: Uri.parse(widget.audioData.imageUrl),
+            ),
+          );
+        } else {
+          if (mp3['https'] != null) {
+            mp3 = mp3['https'];
+          } else if (mp3['http'] != null) {
+            mp3 = mp3['http'];
+          } else {
+            mp3 = mp3['mpeg-dash'];
+          }
+
+          audio = ProgressiveAudioSource(
+            Uri.parse(mp3),
+            tag: MediaItem(
+              id: '0',
+              title: widget.audioData.title,
+              artUri: Uri.parse(widget.audioData.imageUrl),
+            ),
+          );
+        }
       }
 
       await _player.setAudioSource(audio);
+      _player.play();
     } catch (e, stackTrace) {
       // TODO: Catch load errors: 404, invalid url ...
       //print("Error loading playlist: $e");
@@ -155,8 +178,11 @@ class _RadioState extends State<RadioPlayer> {
                         /*Text(metadata.album!,
                             style: Theme.of(context).textTheme.headline6),
                         Text(metadata.title),*/
-                        Text(metadata.title,
-                            style: Theme.of(context).textTheme.headline6),
+                        Text(
+                          metadata.title,
+                          style: Theme.of(context).textTheme.headline6,
+                          textAlign: TextAlign.center,
+                        ),
                       ],
                     );
                   },
