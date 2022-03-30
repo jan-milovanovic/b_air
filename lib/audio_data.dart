@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:b_air/auth/secrets.dart' as secret;
+import 'package:pediatko/auth/secrets.dart' as secret;
 import 'package:http/http.dart' as http;
 
-Future<List<AudioData>> getZaLahkoNoc() async {
+Future<List<AudioData>> getTrack(String showID) async {
   final response = await http.get(Uri.parse(
-      'https://api.rtvslo.si/ava/getSearch2?client_id=${secret.storyClientId}&pageNumber=0&pageSize=12&sort=date&order=desc&showId=54'));
+      'https://api.rtvslo.si/ava/getSearch2?client_id=${secret.storyClientId}&pageNumber=0&pageSize=12&sort=date&order=desc&showId=$showID'));
 
   if (response.statusCode == 200) {
     final int recNumber = getNumberOfRecordings(jsonDecode(response.body));
@@ -42,8 +42,16 @@ class AudioData {
       this.id});
 
   factory AudioData.fromJson(Map<String, dynamic> json, int i) {
+    String imageUrl;
+
+    if (json['response']['recordings'][i]['podcast_thumbnail'] != null) {
+      imageUrl = json['response']['recordings'][i]['podcast_thumbnail']['md'];
+    } else {
+      imageUrl = json['response']['recordings'][i]['images']['wide1'];
+    }
+
     return AudioData(
-      imageUrl: json['response']['recordings'][i]['podcast_thumbnail']['md'],
+      imageUrl: imageUrl,
       title: json['response']['recordings'][i]['title'],
       url: json['response']['recordings'][i]['link'],
       id: json['response']['recordings'][i]['id'],
