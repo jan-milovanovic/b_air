@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'B AIR',
+      title: 'Pediatko',
       theme: ThemeData(
         primaryColor: Colors.white,
         secondaryHeaderColor: Colors.blue.shade900,
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
             .textTheme
             .apply(bodyColor: Colors.black, displayColor: Colors.blue.shade900),
       ),
-      darkTheme: ThemeData.dark(),
+      //darkTheme: ThemeData.dark(),
       home: const SplashScreen(),
     );
   }
