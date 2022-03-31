@@ -26,138 +26,83 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final iconSize = height / 7;
-
     return Scaffold(
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         children: [
-          const Text(
-            "Za pomiritev",
-            textScaleFactor: 2,
-          ),
-          SizedBox(
-            height: height / 3,
-            child: FutureBuilder<List<AudioData>>(
-              future: futureAudioData1,
-              builder: ((context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                } else {
-                  //return Text(snapshot.data!.title);
-                  return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.fromLTRB(5, 20, 5, 0),
-                      itemBuilder: (BuildContext context, int index) {
-                        return SizedBox(
-                            width: iconSize,
-                            child: Column(children: [
-                              IconButton(
-                                  icon: Image.network(
-                                      snapshot.data![index].imageUrl),
-                                  iconSize: iconSize,
-                                  onPressed: () {
-                                    playAudio(context, snapshot.data![index]);
-                                  }),
-                              Text(
-                                snapshot.data![index].title,
-                                textAlign: TextAlign.center,
-                              ),
-                            ]));
-                      });
-                }
-              }),
-            ),
-          ),
-          const Text(
-            "Pred posegom",
-            textScaleFactor: 2,
-          ),
-          SizedBox(
-            height: height / 3,
-            child: FutureBuilder<List<AudioData>>(
-              future: futureAudioData2,
-              builder: ((context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                } else {
-                  //return Text(snapshot.data!.title);
-                  return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.fromLTRB(5, 20, 5, 0),
-                      itemBuilder: (BuildContext context, int index) {
-                        return SizedBox(
-                            width: iconSize,
-                            child: Column(children: [
-                              IconButton(
-                                  icon: Image.network(
-                                      snapshot.data![index].imageUrl),
-                                  iconSize: iconSize,
-                                  onPressed: () {
-                                    playAudio(context, snapshot.data![index]);
-                                  }),
-                              Text(
-                                snapshot.data![index].title,
-                                textAlign: TextAlign.center,
-                              ),
-                            ]));
-                      });
-                }
-              }),
-            ),
-          ),
-          const Text(
-            "Za lahko noč",
-            textScaleFactor: 2,
-          ),
-          SizedBox(
-            height: height / 3,
-            child: FutureBuilder<List<AudioData>>(
-                future: futureAudioData3,
-                builder: ((context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  } else {
-                    //return Text(snapshot.data!.title);
-                    return ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.fromLTRB(5, 20, 5, 0),
-                        itemBuilder: (BuildContext context, int index) {
-                          return SizedBox(
-                              width: iconSize,
-                              child: Column(children: [
-                                IconButton(
-                                    icon: Image.network(
-                                        snapshot.data![index].imageUrl),
-                                    iconSize: iconSize,
-                                    onPressed: () {
-                                      playAudio(context, snapshot.data![index]);
-                                    }),
-                                Text(
-                                  snapshot.data![index].title,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ]));
-                        });
-                  }
-                })),
-          ),
+          paddedText("Za pomiritev"),
+          audioLoader(futureAudioData1),
+          paddedText("Pred posegom"),
+          audioLoader(futureAudioData2),
+          paddedText("Za lahko noč"),
+          audioLoader(futureAudioData3),
         ],
       ),
     );
   }
 
-// TODO: include audio data
+  Padding paddedText(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, left: 10),
+      child: Text(
+        text,
+        textScaleFactor: 2,
+      ),
+    );
+  }
+
+  Container loadingIndicator() {
+    return Container(
+        alignment: Alignment.center, child: const CircularProgressIndicator());
+  }
+
+  SizedBox audioLoader(Future<List<AudioData>> futureAudioData) {
+    final height = MediaQuery.of(context).size.height;
+    final iconSize = height / 6;
+
+    return SizedBox(
+      height: height / 4,
+      child: FutureBuilder<List<AudioData>>(
+        future: futureAudioData,
+        builder: ((context, snapshot) {
+          if (!snapshot.hasData) {
+            return loadingIndicator();
+          } else if (snapshot.hasError) {
+            return Text('${snapshot.error}');
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (BuildContext context, int index) {
+                return SizedBox(
+                  width: iconSize,
+                  child: Column(
+                    children: [
+                      IconButton(
+                        icon: Image.network(snapshot.data![index].imageUrl),
+                        iconSize: iconSize,
+                        onPressed: () {
+                          playAudio(context, snapshot.data![index]);
+                        },
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Text(
+                            snapshot.data![index].title,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+        }),
+      ),
+    );
+  }
+
   void playAudio(BuildContext context, AudioData audioData) {
     Navigator.push(
         context,
