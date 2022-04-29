@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'radio.dart';
 import '../audio_data.dart';
+import 'playlist.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -24,6 +25,7 @@ class _HomeState extends State<Home> {
     futureAudioData3 = getTrack('54'); // za lahko noc
   }
 
+/*
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +41,77 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+*/
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: GridView(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 30.0),
+      children: [
+        paddedText("Za pomiritev"),
+        buttonAudioLoader(futureAudioData1),
+        paddedText("Pred posegom"),
+        buttonAudioLoader(futureAudioData2),
+        paddedText("Za lahko noč"),
+        buttonAudioLoader(futureAudioData3),
+      ],
+    ));
+  }
+
+  SizedBox buttonAudioLoader(Future<List<AudioData>> futureAudioData) {
+    final height = MediaQuery.of(context).size.height;
+    final iconSize = height / 6;
+
+    return SizedBox(
+      height: height / 4,
+      child: FutureBuilder<List<AudioData>>(
+        future: futureAudioData,
+        builder: ((context, snapshot) {
+          if (!snapshot.hasData) {
+            return loadingIndicator();
+          } else if (snapshot.hasError) {
+            return Text('${snapshot.error}');
+          } else {
+            return Column(children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          PlaylistPage(audioDataList: snapshot.data!),
+                    ),
+                  );
+                },
+                icon: Image.network(snapshot.data![0].imageUrl),
+                iconSize: iconSize,
+              ),
+              Text(snapshot.data![0].showName),
+            ]);
+          }
+        }),
+      ),
+    );
+  }
+
+/*
+  Dialog displayRecordingsList(List<AudioData> data) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 10,
+      child: Container(
+        color: Colors.blue,
+        child: ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (BuildContext buildContext, int index) {
+              return SizedBox(child: Text(data[index].title));
+            }),
+      ),
+    );
+  }
+*/
 
   Padding paddedText(String text) {
     return Padding(
@@ -81,7 +154,7 @@ class _HomeState extends State<Home> {
                         icon: Image.network(snapshot.data![index].imageUrl),
                         iconSize: iconSize,
                         onPressed: () {
-                          playAudio(context, snapshot.data![index]);
+                          snapshot.data![index].playAudio(context);
                         },
                       ),
                       Expanded(
@@ -101,12 +174,5 @@ class _HomeState extends State<Home> {
         }),
       ),
     );
-  }
-
-  void playAudio(BuildContext context, AudioData audioData) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => RadioPlayer(audioData: audioData)));
   }
 }
