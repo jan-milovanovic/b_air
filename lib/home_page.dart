@@ -19,7 +19,9 @@ class _HomePageState extends State<HomePage> {
         audioData: AudioData(
             imageUrl:
                 'https://img.rtvslo.si/_up/upload/2020/04/30/65671496.jpg',
-            title: "Radio Z",
+            title: 'Radio Z',
+            showName: 'Radio Z',
+            showDescription: 'radio',
             url:
                 'https://di-br2e5p7r.a.eurovisionflow.net/radiodvr/otp/playlist.m3u8')),
     const Contributors()

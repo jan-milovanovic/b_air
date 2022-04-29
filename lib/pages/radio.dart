@@ -80,7 +80,7 @@ class _RadioState extends State<RadioPlayer> {
 
         // fetch mp3 file
         final responseMP3 = await http.get(Uri.parse(
-            'https://api.rtvslo.si/ava/getMedia/${widget.audioData.id}?client_id=${secret.clientId}&jwt=${jwt}'));
+            'https://api.rtvslo.si/ava/getMedia/${widget.audioData.id}?client_id=${secret.clientId}&jwt=$jwt'));
 
         if (responseMP3.statusCode != 200) {
           throw Exception(
