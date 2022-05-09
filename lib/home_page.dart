@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/home.dart';
 import 'pages/radio.dart';
-import 'pages/contributors.dart';
+import 'pages/webview.dart';
 
 import 'audio_data.dart';
 
@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
             showDescription: 'radio',
             url:
                 'https://di-br2e5p7r.a.eurovisionflow.net/radiodvr/otp/playlist.m3u8')),
-    const Contributors()
+    const Webview()
   ];
 
   int currentIndex = 0;

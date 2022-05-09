@@ -17,7 +17,7 @@ class PlaylistPage extends StatelessWidget {
           centerTitle: true,
           backgroundColor: Colors.grey.shade400,
         ),
-        backgroundColor: Color.fromARGB(234, 198, 204, 255),
+        backgroundColor: const Color.fromARGB(234, 198, 204, 255),
         body: Column(
           children: [
             const SizedBox(height: 20),
@@ -37,7 +37,7 @@ class PlaylistPage extends StatelessWidget {
             ),
             Container(
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 247, 249, 255),
+                color: const Color.fromARGB(255, 247, 249, 255),
                 border: Border.all(color: Colors.blue),
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),

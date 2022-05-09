@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'radio.dart';
 import '../audio_data.dart';
 import 'playlist.dart';
 
@@ -43,6 +42,7 @@ class _HomeState extends State<Home> {
   }
 */
 
+  /// grid renders from top left to bottom right
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,11 +50,11 @@ class _HomeState extends State<Home> {
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 30.0),
       children: [
-        paddedText("Za pomiritev"),
+        buttonAudioLoader(futureAudioData3),
         buttonAudioLoader(futureAudioData1),
-        paddedText("Pred posegom"),
+        buttonAudioLoader(futureAudioData1),
         buttonAudioLoader(futureAudioData2),
-        paddedText("Za lahko noč"),
+        buttonAudioLoader(futureAudioData2),
         buttonAudioLoader(futureAudioData3),
       ],
     ));

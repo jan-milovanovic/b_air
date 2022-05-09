@@ -90,7 +90,6 @@ class _RadioState extends State<RadioPlayer> {
         var mp3 = json.decode(responseMP3.body);
         mp3 = mp3['response']['mediaFiles'][0]['streams'];
 
-        // TODO: hls won't play
         if (mp3['hls_sec'] != null) {
           mp3 = mp3['hls_sec'];
 

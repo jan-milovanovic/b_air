@@ -196,7 +196,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
                   ),
                 ],
               ),
-              Container(
+              SizedBox(
                 height: 240.0,
                 child: StreamBuilder<SequenceState?>(
                   stream: _player.sequenceStateStream,
