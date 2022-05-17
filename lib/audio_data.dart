@@ -4,7 +4,7 @@ import 'package:pediatko/auth/secrets.dart' as secret;
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import './pages/radio.dart';
+import './pages/recording_player.dart';
 
 Future<List<AudioData>> getTrack(String showID) async {
   final response = await http.get(Uri.parse(
@@ -35,6 +35,7 @@ int getNumberOfRecordings(res) {
 class AudioData {
   final String imageUrl;
   final String title;
+  final String titleDescription;
   final String showName;
   final String showDescription;
   final String url;
@@ -43,14 +44,18 @@ class AudioData {
   const AudioData(
       {required this.imageUrl,
       required this.title,
+      required this.titleDescription,
       required this.showName,
       required this.showDescription,
       required this.url,
       this.id});
 
-  void playAudio(BuildContext context) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => RadioPlayer(audioData: this)));
+  void playAudio(BuildContext context, Color color) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                RecordingPlayer(audioData: this, color: color)));
   }
 
   factory AudioData.fromJson(Map<String, dynamic> json, int i) {
@@ -65,6 +70,7 @@ class AudioData {
     return AudioData(
       imageUrl: imageUrl,
       title: json['response']['recordings'][i]['title'],
+      titleDescription: json['response']['recordings'][i]['description'],
       showName: json['response']['recordings'][i]['showName'],
       showDescription: json['response']['recordings'][i]['showDescription'],
       url: json['response']['recordings'][i]['link'],
