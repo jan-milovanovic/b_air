@@ -27,20 +27,23 @@ class ControlButtons extends StatelessWidget {
               );
             } else if (playing != true) {
               return IconButton(
-                icon: const Icon(Icons.play_arrow),
-                iconSize: 64.0,
+                icon: const Icon(Icons.play_circle_fill_rounded),
+                color: Theme.of(context).colorScheme.primary,
+                iconSize: 128.0,
                 onPressed: player.play,
               );
             } else if (processingState != ProcessingState.completed) {
               return IconButton(
-                icon: const Icon(Icons.pause),
-                iconSize: 64.0,
+                icon: const Icon(Icons.pause_circle_filled_rounded),
+                color: Theme.of(context).colorScheme.primary,
+                iconSize: 128.0,
                 onPressed: player.pause,
               );
             } else {
               return IconButton(
-                icon: const Icon(Icons.replay),
-                iconSize: 64.0,
+                icon: const Icon(Icons.replay_circle_filled_rounded),
+                color: Theme.of(context).colorScheme.primary,
+                iconSize: 128.0,
                 onPressed: () => player.seek(Duration.zero,
                     index: player.effectiveIndices!.first),
               );
