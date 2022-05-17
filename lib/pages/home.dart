@@ -50,17 +50,18 @@ class _HomeState extends State<Home> {
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 30.0),
       children: [
-        buttonAudioLoader(futureAudioData3),
-        buttonAudioLoader(futureAudioData1),
-        buttonAudioLoader(futureAudioData1),
-        buttonAudioLoader(futureAudioData2),
-        buttonAudioLoader(futureAudioData2),
-        buttonAudioLoader(futureAudioData3),
+        buttonAudioLoader(futureAudioData3, const Color(0xffed724c)),
+        buttonAudioLoader(futureAudioData1, const Color(0xffffa54b)),
+        buttonAudioLoader(futureAudioData1, const Color(0xffed5875)),
+        buttonAudioLoader(futureAudioData2, const Color(0xff39b070)),
+        buttonAudioLoader(futureAudioData2, const Color(0xffe05251)),
+        buttonAudioLoader(futureAudioData3, const Color(0xff7566ac)),
       ],
     ));
   }
 
-  SizedBox buttonAudioLoader(Future<List<AudioData>> futureAudioData) {
+  SizedBox buttonAudioLoader(
+      Future<List<AudioData>> futureAudioData, Color buttonColor) {
     final height = MediaQuery.of(context).size.height;
     final iconSize = height / 6;
 
@@ -80,8 +81,8 @@ class _HomeState extends State<Home> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          PlaylistPage(audioDataList: snapshot.data!),
+                      builder: (context) => PlaylistPage(
+                          audioDataList: snapshot.data!, color: buttonColor),
                     ),
                   );
                 },
@@ -128,7 +129,7 @@ class _HomeState extends State<Home> {
         alignment: Alignment.center, child: const CircularProgressIndicator());
   }
 
-  SizedBox audioLoader(Future<List<AudioData>> futureAudioData) {
+  SizedBox audioLoader(Future<List<AudioData>> futureAudioData, Color color) {
     final height = MediaQuery.of(context).size.height;
     final iconSize = height / 6;
 
@@ -154,7 +155,7 @@ class _HomeState extends State<Home> {
                         icon: Image.network(snapshot.data![index].imageUrl),
                         iconSize: iconSize,
                         onPressed: () {
-                          snapshot.data![index].playAudio(context);
+                          snapshot.data![index].playAudio(context, color);
                         },
                       ),
                       Expanded(
