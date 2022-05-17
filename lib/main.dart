@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'login_page.dart';
 
@@ -24,11 +25,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pediatko',
       theme: ThemeData(
-        primaryColor: Colors.white,
-        secondaryHeaderColor: Colors.blue.shade900,
-        textTheme: Theme.of(context)
-            .textTheme
-            .apply(bodyColor: Colors.black, displayColor: Colors.blue.shade900),
+        primaryColor: const Color(0xff3fbbed),
+        textTheme: GoogleFonts.ptSansTextTheme(Theme.of(context).textTheme),
       ),
       //darkTheme: ThemeData.dark(),
       home: const SplashScreen(),
