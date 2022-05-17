@@ -146,6 +146,8 @@ class _RadioState extends State<RadioPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -166,12 +168,14 @@ class _RadioState extends State<RadioPlayer> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                                child:
-                                    Image.network(metadata.artUri.toString())),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image(
+                              image: NetworkImage(metadata.artUri.toString()),
+                              width: width / 1.5,
+                            ),
                           ),
                         ),
                         /*Text(metadata.album!,
