@@ -4,14 +4,9 @@ import 'package:just_audio_background/just_audio_background.dart';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-import 'audioplay/player_seekbar.dart';
 import 'audioplay/control_buttons.dart';
 import '../audio_data.dart';
-import '../auth/secrets.dart' as secret;
 
 class RadioPlayer extends StatefulWidget {
   const RadioPlayer({Key? key, required this.audioData}) : super(key: key);
@@ -47,79 +42,14 @@ class _RadioState extends State<RadioPlayer> {
       final AudioSource audio;
 
       /// HLS stream
-      if (widget.audioData.url.endsWith(".m3u8")) {
-        audio = HlsAudioSource(
-          Uri.parse(widget.audioData.url),
-          tag: MediaItem(
-            id: '0',
-            title: widget.audioData.title,
-            artUri: Uri.parse(widget.audioData.imageUrl),
-          ),
-        );
-      } else if (widget.audioData.url.endsWith(".mp3")) {
-        /// regular media file
-        audio = ProgressiveAudioSource(
-          Uri.parse(widget.audioData.url),
-          tag: MediaItem(
-            id: '0',
-            title: widget.audioData.title,
-            artUri: Uri.parse(widget.audioData.imageUrl),
-          ),
-        );
-      } else {
-        // fetch jwt key
-        final responseJWT = await http.get(Uri.parse(
-            'https://api.rtvslo.si/ava/getRecordingDrm/${widget.audioData.id}?client_id=${secret.clientId}'));
-
-        if (responseJWT.statusCode != 200) {
-          throw Exception(
-              'Failed to load website for title: ${widget.audioData.title}, link: ${widget.audioData.url}');
-        }
-
-        final String jwt = json.decode(responseJWT.body)['response']['jwt'];
-
-        // fetch mp3 file
-        final responseMP3 = await http.get(Uri.parse(
-            'https://api.rtvslo.si/ava/getMedia/${widget.audioData.id}?client_id=${secret.clientId}&jwt=$jwt'));
-
-        if (responseMP3.statusCode != 200) {
-          throw Exception(
-              'Failed to load website for title: ${widget.audioData.title}, link: ${widget.audioData.url}');
-        }
-
-        var mp3 = json.decode(responseMP3.body);
-        mp3 = mp3['response']['mediaFiles'][0]['streams'];
-
-        if (mp3['hls_sec'] != null) {
-          mp3 = mp3['hls_sec'];
-
-          audio = HlsAudioSource(
-            Uri.parse(mp3),
-            tag: MediaItem(
-              id: '0',
-              title: widget.audioData.title,
-              artUri: Uri.parse(widget.audioData.imageUrl),
-            ),
-          );
-        } else {
-          if (mp3['https'] != null) {
-            mp3 = mp3['https'];
-          } else if (mp3['http'] != null) {
-            mp3 = mp3['http'];
-          } else {
-            mp3 = mp3['mpeg-dash'];
-          }
-
-          audio = ProgressiveAudioSource(
-            Uri.parse(mp3),
-            tag: MediaItem(
-              id: '0',
-              title: widget.audioData.title,
-              artUri: Uri.parse(widget.audioData.imageUrl),
-            ),
-          );
-        }
-      }
+      audio = HlsAudioSource(
+        Uri.parse(widget.audioData.url),
+        tag: MediaItem(
+          id: '0',
+          title: widget.audioData.title,
+          artUri: Uri.parse(widget.audioData.imageUrl),
+        ),
+      );
 
       await _player.setAudioSource(audio);
       _player.play();
@@ -136,25 +66,24 @@ class _RadioState extends State<RadioPlayer> {
     super.dispose();
   }
 
-  Stream<PositionData> get _positionDataStream =>
-      Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
-          _player.positionStream,
-          _player.bufferedPositionStream,
-          _player.durationStream,
-          (position, bufferedPosition, duration) => PositionData(
-              position, bufferedPosition, duration ?? Duration.zero));
-
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
+    Color defaultColor = Theme.of(context).colorScheme.primary;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: SafeArea(
+        //backgroundColor: defaultColor,
+        body: Container(
+          alignment: Alignment.center,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+          ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 child: StreamBuilder<SequenceState?>(
@@ -166,10 +95,10 @@ class _RadioState extends State<RadioPlayer> {
                     }
                     final metadata = state!.currentSource!.tag as MediaItem;
                     return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(32.0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(20),
                             child: Image(
@@ -178,9 +107,14 @@ class _RadioState extends State<RadioPlayer> {
                             ),
                           ),
                         ),
-                        /*Text(metadata.album!,
-                            style: Theme.of(context).textTheme.headline6),
-                        Text(metadata.title),*/
+                        Text(
+                          "V ŽIVO",
+                          style: TextStyle(
+                            color: defaultColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
                         Text(
                           metadata.title,
                           style: Theme.of(context).textTheme.headline6,
@@ -192,22 +126,7 @@ class _RadioState extends State<RadioPlayer> {
                 ),
               ),
               ControlButtons(_player),
-              StreamBuilder<PositionData>(
-                stream: _positionDataStream,
-                builder: (context, snapshot) {
-                  final positionData = snapshot.data;
-                  return SeekBar(
-                    duration: positionData?.duration ?? Duration.zero,
-                    position: positionData?.position ?? Duration.zero,
-                    bufferedPosition:
-                        positionData?.bufferedPosition ?? Duration.zero,
-                    onChangeEnd: (newPosition) {
-                      _player.seek(newPosition);
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 30.0),
             ],
           ),
         ),
