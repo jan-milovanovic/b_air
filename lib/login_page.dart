@@ -1,19 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'home_page.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<LoginPage> {
   final inputFieldController = TextEditingController();
+
+  final storage = const FlutterSecureStorage();
+
+  void writePasswordStorage(String pwdString) async {
+    await storage.write(key: 'password', value: pwdString);
+  }
+
+  void readCheckProceedPassword() async {
+    try {
+      String? pwdString = await storage.read(key: 'password');
+
+      if (pwdString != null) {
+        List<String> pwdListString = pwdString.split('-');
+        List<int> pwdList = pwdListString.map(int.parse).toList();
+        DateTime pwdDate = DateTime.utc(pwdList[0], pwdList[1], pwdList[2]);
+        if (DateTime.now().compareTo(pwdDate) < 0) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const HomePage()));
+        } else {
+          deletePasswordStorage();
+        }
+      } else {
+        return;
+      }
+    } catch (e) {
+      // TODO: display issue
+    }
+  }
+
+  void deletePasswordStorage() async {
+    await storage.delete(key: 'password');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    readCheckProceedPassword();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
-
     Color defaultColor = Theme.of(context).colorScheme.primary;
+
     return Scaffold(
         backgroundColor: defaultColor,
         body: Column(
@@ -96,13 +138,23 @@ class LoginPage extends StatelessWidget {
       ),
       child: const Icon(Icons.arrow_forward_rounded, size: 60),
       onPressed: () {
-        checkValidAndProceed(context);
+        checkValidAndProceed(context, inputFieldController.text);
       },
     );
   }
 
-  void checkValidAndProceed(BuildContext context) {
-    if (inputFieldController.text == "1234") {
+  void checkValidAndProceed(BuildContext context, String password) {
+    //1234:2022-05-19
+    //2345:2022-05-25
+
+    String time = '2022-05-19';
+
+    if (password == '1234') {
+      // two solutions:
+      // 1: write date of expirations and user has to login afterwards
+      // 2: write password and check password every time upon app start
+      writePasswordStorage(time);
+
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const HomePage()));
     }
