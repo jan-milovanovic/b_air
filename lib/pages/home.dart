@@ -89,7 +89,10 @@ class _HomeState extends State<Home> {
                 icon: Image.network(snapshot.data![0].imageUrl),
                 iconSize: iconSize,
               ),
-              Text(snapshot.data![0].showName),
+              Text(
+                snapshot.data![0].showName,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ]);
           }
         }),
