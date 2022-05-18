@@ -40,7 +40,7 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 40),
                 inputField(inputFieldController),
                 const SizedBox(height: 50),
-                continueButton(inputFieldController.text, context),
+                continueButton(context),
                 const SizedBox(height: 20),
               ]),
             ),
@@ -48,63 +48,63 @@ class LoginPage extends StatelessWidget {
           ],
         ));
   }
-}
 
-RichText welcomeText() {
-  return RichText(
+  RichText welcomeText() {
+    return RichText(
+        textAlign: TextAlign.center,
+        text: const TextSpan(
+            style: TextStyle(fontSize: 24, color: Colors.black),
+            children: <TextSpan>[
+              TextSpan(text: 'Dobrodošli,\n'),
+              TextSpan(
+                  text: 'vse bo vredu :)',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            ]));
+  }
+
+  TextField inputField(inputFieldController) {
+    return TextField(
       textAlign: TextAlign.center,
-      text: const TextSpan(
-          style: TextStyle(fontSize: 24, color: Colors.black),
-          children: <TextSpan>[
-            TextSpan(text: 'Dobrodošli,\n'),
-            TextSpan(
-                text: 'vse bo vredu :)',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          ]));
-}
-
-TextField inputField(inputFieldController) {
-  return TextField(
-    textAlign: TextAlign.center,
-    controller: inputFieldController,
-    keyboardType: TextInputType.number,
-    inputFormatters: <TextInputFormatter>[
-      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-    ],
-    decoration: const InputDecoration(
-      hintText: 'Vnesite aktivacijsko kodo',
-      suffixIcon: Icon(
-        Icons.check_circle,
-        size: 40,
-        color: Color.fromARGB(50, 0, 0, 0),
+      controller: inputFieldController,
+      keyboardType: TextInputType.number,
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+      ],
+      decoration: const InputDecoration(
+        hintText: 'Vnesite aktivacijsko kodo',
+        suffixIcon: Icon(
+          Icons.check_circle,
+          size: 40,
+          color: Color.fromARGB(50, 0, 0, 0),
+        ),
+        prefixIcon: Icon(
+          Icons.check_box_outline_blank,
+          color: Colors.white,
+        ),
       ),
-      prefixIcon: Icon(
-        Icons.check_box_outline_blank,
-        color: Colors.white,
+    );
+  }
+
+  TextButton continueButton(BuildContext context) {
+    return TextButton(
+      style: TextButton.styleFrom(
+        primary: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        onSurface: Colors.black,
+        minimumSize: const Size(90.0, 90.0),
+        shape: const CircleBorder(),
       ),
-    ),
-  );
-}
+      child: const Icon(Icons.arrow_forward_rounded, size: 60),
+      onPressed: () {
+        checkValidAndProceed(context);
+      },
+    );
+  }
 
-TextButton continueButton(String passcode, BuildContext context) {
-  return TextButton(
-    style: TextButton.styleFrom(
-      primary: Colors.white,
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      onSurface: Colors.black,
-      minimumSize: const Size(90.0, 90.0),
-      shape: const CircleBorder(),
-    ),
-    child: const Icon(Icons.arrow_forward_rounded, size: 60),
-    onPressed: () {
-      checkValidAndProceed(passcode, context);
-    },
-  );
-}
-
-void checkValidAndProceed(String passcode, BuildContext context) {
-  if (passcode == "1234") {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const HomePage()));
+  void checkValidAndProceed(BuildContext context) {
+    if (inputFieldController.text == "1234") {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const HomePage()));
+    }
   }
 }
