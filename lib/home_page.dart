@@ -62,32 +62,7 @@ class _HomePageState extends State<HomePage> {
           onPressed: () => showDialog(
             context: context,
             builder: (_) {
-              return AlertDialog(
-                title: const Text('Ste prepričani?'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    passwordExpire(),
-                    TextButton(
-                      child: const Text('Odjavi me'),
-                      onPressed: () {
-                        storage.deletePassword();
-                        Navigator.pop(context); // close dialog
-                        Navigator.pop(context); // return to login screen
-                      },
-                    ),
-                    TextButton(
-                      child: const Text(
-                        'Zapri',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context); // close dialog
-                      },
-                    ),
-                  ],
-                ),
-              );
+              return logoutDialog();
             },
           ),
         ),
@@ -118,13 +93,52 @@ class _HomePageState extends State<HomePage> {
             elevation: 0,
             //iconSize: 30,
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.radio), label: 'Radio'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.info), label: 'Contributors'),
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+              BottomNavigationBarItem(icon: Icon(Icons.radio), label: ''),
+              BottomNavigationBarItem(icon: Icon(Icons.info), label: ''),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  AlertDialog logoutDialog() {
+    return AlertDialog(
+      title: const Text('Ste prepričani?'),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(20),
+        ),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          passwordExpire(),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                child: const Text(
+                  'Zapri',
+                  style: TextStyle(color: Colors.grey),
+                ),
+                onPressed: () {
+                  Navigator.pop(context); // close dialog
+                },
+              ),
+              TextButton(
+                child: const Text('Odjavi me'),
+                onPressed: () {
+                  storage.deletePassword();
+                  Navigator.pop(context); // close dialog
+                  Navigator.pop(context); // return to login screen
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -154,9 +168,5 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
     );
-  }
-
-  Future<String> displayExpireDate() async {
-    return 'Geslo poteče: ${await storage.readPassword}';
   }
 }
