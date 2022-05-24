@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 import 'pages/home.dart';
 import 'pages/radio.dart';
 import 'pages/webview.dart';
 
 import 'audio_data.dart';
+import 'password_manager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -31,6 +35,12 @@ class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Color defaultColor = Theme.of(context).colorScheme.primary;
 
@@ -45,7 +55,44 @@ class _HomePageState extends State<HomePage> {
             bottom: Radius.circular(20),
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.logout_rounded),
+          color: Colors.white,
+          iconSize: 30,
+          onPressed: () => showDialog(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                title: const Text('Ste prepričani?'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    passwordExpire(),
+                    TextButton(
+                      child: const Text('Odjavi me'),
+                      onPressed: () {
+                        storage.deletePassword();
+                        Navigator.pop(context); // close dialog
+                        Navigator.pop(context); // return to login screen
+                      },
+                    ),
+                    TextButton(
+                      child: const Text(
+                        'Zapri',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context); // close dialog
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
       ),
+      //backgroundColor: defaultColor,
       body: screens[currentIndex],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
@@ -80,5 +127,36 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Row passwordExpire() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('Geslo poteče: '),
+        FutureBuilder(
+          future: storage.readPassword,
+          builder: ((context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Text('...');
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            } else {
+              DateTime parseDT = DateTime.parse(snapshot.data.toString());
+              var outputDate = DateFormat.yMMMd('sl').format(parseDT);
+
+              return Text(
+                outputDate,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              );
+            }
+          }),
+        ),
+      ],
+    );
+  }
+
+  Future<String> displayExpireDate() async {
+    return 'Geslo poteče: ${await storage.readPassword}';
   }
 }
