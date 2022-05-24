@@ -63,43 +63,49 @@ class PlaylistPage extends StatelessWidget {
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
               ),
-              child: SizedBox(
-                height: height / 2,
-                child: ListView.builder(
-                    itemCount: audioDataList.length,
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          audioDataList[index].playAudio(context, color);
-                        },
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                const SizedBox(height: 50, width: 20),
-                                Icon(Icons.play_circle_fill_rounded,
-                                    size: 40, color: defaultColor),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Text(
-                                      audioDataList[index].title,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+                child: SizedBox(
+                  height: height / 2,
+                  child: ListView.builder(
+                      itemCount: audioDataList.length,
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            audioDataList[index].playAudio(context, color);
+                          },
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  const SizedBox(height: 50, width: 20),
+                                  Icon(Icons.play_circle_fill_rounded,
+                                      size: 40, color: defaultColor),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      padding: const EdgeInsets.only(right: 20),
+                                      scrollDirection: Axis.horizontal,
+                                      child: Text(
+                                        audioDataList[index].title,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            divideBetween(audioDataList.length, index),
-                          ],
-                        ),
-                      );
-                    }),
+                                ],
+                              ),
+                              divideBetween(audioDataList.length, index),
+                            ],
+                          ),
+                        );
+                      }),
+                ),
               ),
             ),
           ],
