@@ -13,18 +13,15 @@ Future<List<AudioData>> getTrack(String showID) async {
   if (response.statusCode == 200) {
     final int recNumber = getNumberOfRecordings(jsonDecode(response.body));
 
-    /// can't add if audioData is potentially null..?
-    List<AudioData> audioData = [
-      AudioData.fromJson(jsonDecode(response.body), 0)
-    ];
+    List<AudioData> audioData = [];
 
-    for (int i = 1; i < recNumber; i++) {
+    for (int i = 0; i < recNumber; i++) {
       audioData.add(AudioData.fromJson(jsonDecode(response.body), i));
     }
 
     return audioData;
   } else {
-    throw Exception('Failed to load \'lahko noc\' audio data');
+    throw Exception('Failed to load audio data');
   }
 }
 
