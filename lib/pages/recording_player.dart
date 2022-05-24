@@ -161,6 +161,7 @@ class _RecordingState extends State<RecordingPlayer> {
               color: Colors.white),
           child: SafeArea(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: StreamBuilder<SequenceState?>(
@@ -216,7 +217,7 @@ class _RecordingState extends State<RecordingPlayer> {
                     },
                   ),
                 ),
-                ControlButtons(_player),
+                Center(child: ControlButtons(_player)),
                 StreamBuilder<PositionData>(
                   stream: _positionDataStream,
                   builder: (context, snapshot) {
