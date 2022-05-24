@@ -1,6 +1,11 @@
+import 'dart:convert';
+
+import 'package:pediatko/auth/secrets.dart' as secret;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+
+import 'password_manager.dart';
 
 import 'home_page.dart';
 
@@ -14,42 +19,52 @@ class LoginPage extends StatefulWidget {
 class _LoginState extends State<LoginPage> {
   final inputFieldController = TextEditingController();
 
-  final storage = const FlutterSecureStorage();
+  late final Future<List> tokenList;
 
-  void writePasswordStorage(String pwdString) async {
-    await storage.write(key: 'password', value: pwdString);
+  bool checkValidDate(String? dateString) {
+    if (dateString != null) {
+      List<String> dateListString = dateString.split('-');
+      List<int> dateList = dateListString.map(int.parse).toList();
+      DateTime date = DateTime.utc(dateList[0], dateList[1], dateList[2]);
+      if (DateTime.now().compareTo(date) < 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<List> getPasswordTokens() async {
+    final response = await http.get(Uri.parse(
+        'https://api.rtvslo.si/preslikave/bair?client_id=${secret.storyClientId}&_=1653382464036'));
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['response'];
+    } else {
+      throw Exception('Failed to load token data');
+    }
   }
 
   void readCheckProceedPassword() async {
     try {
-      String? pwdString = await storage.read(key: 'password');
+      String? dateExpire = await storage.readPassword;
 
-      if (pwdString != null) {
-        List<String> pwdListString = pwdString.split('-');
-        List<int> pwdList = pwdListString.map(int.parse).toList();
-        DateTime pwdDate = DateTime.utc(pwdList[0], pwdList[1], pwdList[2]);
-        if (DateTime.now().compareTo(pwdDate) < 0) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const HomePage()));
-        } else {
-          deletePasswordStorage();
-        }
+      if (checkValidDate(dateExpire)) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const HomePage()));
       } else {
-        return;
+        storage.deletePassword();
       }
     } catch (e) {
       // TODO: display issue
     }
   }
 
-  void deletePasswordStorage() async {
-    await storage.delete(key: 'password');
-  }
-
   @override
   void initState() {
     super.initState();
     readCheckProceedPassword();
+    tokenList = getPasswordTokens();
+    inputFieldController.clear();
   }
 
   @override
@@ -108,9 +123,9 @@ class _LoginState extends State<LoginPage> {
     return TextField(
       textAlign: TextAlign.center,
       controller: inputFieldController,
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.text,
       inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z]'))
       ],
       decoration: const InputDecoration(
         hintText: 'Vnesite aktivacijsko kodo',
@@ -138,25 +153,30 @@ class _LoginState extends State<LoginPage> {
       ),
       child: const Icon(Icons.arrow_forward_rounded, size: 60),
       onPressed: () {
-        checkValidAndProceed(context, inputFieldController.text);
+        login(context, inputFieldController.text);
       },
     );
   }
 
-  void checkValidAndProceed(BuildContext context, String password) {
-    //1234:2022-05-19
-    //2345:2022-05-25
+  void login(BuildContext context, String password) async {
+    bool valid = await checkValid(tokenList, password);
 
-    String time = '2022-05-19';
-
-    if (password == '1234') {
-      // two solutions:
-      // 1: write date of expirations and user has to login afterwards
-      // 2: write password and check password every time upon app start
-      writePasswordStorage(time);
-
+    if (valid) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const HomePage()));
     }
+  }
+
+  Future<bool> checkValid(Future<List> tokenList, String password) {
+    return tokenList.then((list) {
+      for (var tokenData in list) {
+        if (password == tokenData['token'] &&
+            checkValidDate(tokenData['expires'])) {
+          storage.writePassword = tokenData['expires'];
+          return true;
+        }
+      }
+      return false;
+    });
   }
 }
