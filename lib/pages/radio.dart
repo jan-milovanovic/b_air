@@ -74,11 +74,11 @@ class _RadioState extends State<RadioPlayer> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        //backgroundColor: defaultColor,
+        backgroundColor: Colors.white,
         body: Container(
           alignment: Alignment.center,
           decoration: const BoxDecoration(
-            color: Colors.white,
+            //color: Colors.white,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(20),
             ),

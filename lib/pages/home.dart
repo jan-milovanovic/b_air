@@ -46,18 +46,19 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
         body: GridView(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 30.0),
-      children: [
-        buttonAudioLoader(futureAudioData3, const Color(0xffed724c)),
-        buttonAudioLoader(futureAudioData1, const Color(0xffffa54b)),
-        buttonAudioLoader(futureAudioData1, const Color(0xffed5875)),
-        buttonAudioLoader(futureAudioData2, const Color(0xff39b070)),
-        buttonAudioLoader(futureAudioData2, const Color(0xffe05251)),
-        buttonAudioLoader(futureAudioData3, const Color(0xff7566ac)),
-      ],
-    ));
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 30.0),
+          children: [
+            buttonAudioLoader(futureAudioData3, const Color(0xffed724c)),
+            buttonAudioLoader(futureAudioData1, const Color(0xffffa54b)),
+            buttonAudioLoader(futureAudioData1, const Color(0xffed5875)),
+            buttonAudioLoader(futureAudioData2, const Color(0xff39b070)),
+            buttonAudioLoader(futureAudioData2, const Color(0xffe05251)),
+            buttonAudioLoader(futureAudioData3, const Color(0xff7566ac)),
+          ],
+        ));
   }
 
   SizedBox buttonAudioLoader(
