@@ -132,7 +132,7 @@ class _RecordingState extends State<RecordingPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -184,7 +184,8 @@ class _RecordingState extends State<RecordingPlayer> {
                                   child: Image(
                                     image: NetworkImage(
                                         metadata.artUri.toString()),
-                                    width: width / 3,
+                                    //width: width / 3,
+                                    height: height * 0.169,
                                   ),
                                 ),
                                 const SizedBox(height: 10),
@@ -204,7 +205,7 @@ class _RecordingState extends State<RecordingPlayer> {
                                 ),
                                 const SizedBox(height: 20),
                                 SizedBox(
-                                  height: 200,
+                                  height: height * 0.25,
                                   child: SingleChildScrollView(
                                     child: Text(metadata.displayDescription!),
                                   ),
@@ -217,7 +218,13 @@ class _RecordingState extends State<RecordingPlayer> {
                     },
                   ),
                 ),
-                Center(child: ControlButtons(_player)),
+                Center(
+                  child: SizedBox(
+                    height: height * 0.18,
+                    child: ControlButtons(_player),
+                  ),
+                ),
+
                 StreamBuilder<PositionData>(
                   stream: _positionDataStream,
                   builder: (context, snapshot) {
@@ -234,6 +241,7 @@ class _RecordingState extends State<RecordingPlayer> {
                   },
                 ),
                 const SizedBox(height: 30.0),
+                //const Spacer(flex: 1),
               ],
             ),
           ),
