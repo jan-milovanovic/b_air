@@ -69,6 +69,8 @@ class _LoginState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final double height = MediaQuery.of(context).size.height;
+    final double heightResized = MediaQuery.of(context).viewInsets.bottom;
     Color defaultColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
@@ -85,25 +87,34 @@ class _LoginState extends State<LoginPage> {
                   color: Colors.white),
               margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
               padding: const EdgeInsets.all(20),
-              child: Column(children: [
-                const SizedBox(height: 20),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                SizedBox(height: resized(heightResized) ? 20 : 0),
+                //const Spacer(flex: 1),
                 Icon(
                   Icons.lock,
                   size: 40,
                   color: defaultColor,
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: resized(heightResized) ? 20 : 10),
+                //const Spacer(flex: 1),
                 welcomeText(),
-                const SizedBox(height: 40),
+                SizedBox(height: resized(heightResized) ? 40 : 20),
+                //const Spacer(flex: 1),
                 inputField(inputFieldController),
-                const SizedBox(height: 50),
+                SizedBox(height: resized(heightResized) ? 50 : 20),
+                //const Spacer(flex: 1),
                 continueButton(context),
-                const SizedBox(height: 20),
+                SizedBox(height: resized(heightResized) ? 20 : 0),
+                //const Spacer(flex: 1),
               ]),
             ),
             const Spacer(flex: 1),
           ],
         ));
+  }
+
+  bool resized(double heightResized) {
+    return heightResized == 0;
   }
 
   RichText welcomeText() {
@@ -158,15 +169,6 @@ class _LoginState extends State<LoginPage> {
     );
   }
 
-  void login(BuildContext context, String password) async {
-    bool valid = await checkValid(tokenList, password);
-
-    if (valid) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const HomePage()));
-    }
-  }
-
   Future<bool> checkValid(Future<List> tokenList, String password) {
     return tokenList.then((list) {
       for (var tokenData in list) {
@@ -178,5 +180,31 @@ class _LoginState extends State<LoginPage> {
       }
       return false;
     });
+  }
+
+  void login(BuildContext context, String password) async {
+    bool valid = await checkValid(tokenList, password);
+
+    if (valid) {
+      /*
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const HomePage()));
+          */
+      Navigator.push(context, homePageAnimation());
+    }
+  }
+
+  Route homePageAnimation() {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const HomePage(),
+        transitionDuration: const Duration(seconds: 1),
+        reverseTransitionDuration: const Duration(milliseconds: 500),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        });
   }
 }
