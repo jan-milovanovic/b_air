@@ -55,10 +55,12 @@ class _HomePageState extends State<HomePage> {
             bottom: Radius.circular(20),
           ),
         ),
+        leadingWidth: 70,
         leading: IconButton(
           icon: const Icon(Icons.logout_rounded),
           color: Colors.white,
           iconSize: 30,
+          //padding: const EdgeInsets.only(left: 15),
           onPressed: () => showDialog(
             context: context,
             builder: (_) {
