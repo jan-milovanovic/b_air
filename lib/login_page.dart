@@ -16,10 +16,32 @@ class LoginPage extends StatefulWidget {
   _LoginState createState() => _LoginState();
 }
 
-class _LoginState extends State<LoginPage> {
+class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   final inputFieldController = TextEditingController();
 
   late final Future<List> tokenList;
+  late AnimationController _checkmarkController;
+
+  /// checkmark icon in input field
+  /// 0 = neutral, 1 = success, 2 = invalid (login)
+  int checkStateIndex = 0;
+  List<Icon> checkState = const [
+    Icon(
+      Icons.check_circle,
+      size: 40,
+      color: Color.fromARGB(50, 0, 0, 0),
+    ),
+    Icon(
+      Icons.check_circle,
+      size: 40,
+      color: Color.fromARGB(200, 0, 150, 0),
+    ),
+    Icon(
+      Icons.check_circle,
+      size: 40,
+      color: Color.fromARGB(200, 255, 0, 0),
+    ),
+  ];
 
   bool checkValidDate(String? dateString) {
     if (dateString != null) {
@@ -65,6 +87,9 @@ class _LoginState extends State<LoginPage> {
     readCheckProceedPassword();
     tokenList = getPasswordTokens();
     inputFieldController.clear();
+
+    _checkmarkController = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
   }
 
   @override
@@ -89,23 +114,18 @@ class _LoginState extends State<LoginPage> {
               padding: const EdgeInsets.all(20),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
                 SizedBox(height: resized(heightResized) ? 20 : 0),
-                //const Spacer(flex: 1),
                 Icon(
                   Icons.lock,
                   size: 40,
                   color: defaultColor,
                 ),
                 SizedBox(height: resized(heightResized) ? 20 : 10),
-                //const Spacer(flex: 1),
                 welcomeText(),
                 SizedBox(height: resized(heightResized) ? 40 : 20),
-                //const Spacer(flex: 1),
                 inputField(inputFieldController),
                 SizedBox(height: resized(heightResized) ? 50 : 20),
-                //const Spacer(flex: 1),
                 continueButton(context),
                 SizedBox(height: resized(heightResized) ? 20 : 0),
-                //const Spacer(flex: 1),
               ]),
             ),
             const Spacer(flex: 1),
@@ -138,14 +158,10 @@ class _LoginState extends State<LoginPage> {
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z]'))
       ],
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         hintText: 'Vnesite aktivacijsko kodo',
-        suffixIcon: Icon(
-          Icons.check_circle,
-          size: 40,
-          color: Color.fromARGB(50, 0, 0, 0),
-        ),
-        prefixIcon: Icon(
+        suffixIcon: animatedCheckIcon(),
+        prefixIcon: const Icon(
           Icons.check_box_outline_blank,
           color: Colors.white,
         ),
@@ -186,11 +202,15 @@ class _LoginState extends State<LoginPage> {
     bool valid = await checkValid(tokenList, password);
 
     if (valid) {
-      /*
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const HomePage()));
-          */
+      setState(() {
+        checkStateIndex = 1;
+      });
       Navigator.push(context, homePageAnimation());
+    } else {
+      setState(() {
+        checkStateIndex = 2;
+      });
+      _checkmarkController.forward(from: 0.0);
     }
   }
 
@@ -204,6 +224,23 @@ class _LoginState extends State<LoginPage> {
           return FadeTransition(
             opacity: animation,
             child: child,
+          );
+        });
+  }
+
+  animatedCheckIcon() {
+    Animation<double> offsetAnimation = Tween(begin: 0.0, end: 10.0)
+        .chain(CurveTween(curve: Curves.bounceOut))
+        .animate(_checkmarkController);
+
+    return AnimatedBuilder(
+        animation: offsetAnimation,
+        builder: (buildContext, child) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: 10 - offsetAnimation.value,
+            ),
+            child: checkState[checkStateIndex],
           );
         });
   }
