@@ -26,7 +26,8 @@ class PlaylistPage extends StatelessWidget {
         backgroundColor: color,
         body: Column(
           children: [
-            const SizedBox(height: 20),
+            //const SizedBox(height: 20),
+            const Spacer(flex: 1),
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Image(
@@ -41,7 +42,8 @@ class PlaylistPage extends StatelessWidget {
                   color: Colors.white,
                   fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
+            //const SizedBox(height: 20),
+            const Spacer(flex: 1),
             SizedBox(
               height: 70,
               width: width - 50,
