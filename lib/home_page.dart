@@ -33,11 +33,18 @@ class _HomePageState extends State<HomePage> {
   ];
 
   int currentIndex = 0;
+  final PageController _pageController = PageController(initialPage: 0);
 
   @override
   void initState() {
     super.initState();
     initializeDateFormatting();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
   }
 
   @override
@@ -69,8 +76,16 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      //backgroundColor: defaultColor,
-      body: screens[currentIndex],
+      backgroundColor: Colors.white,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (newIndex) {
+          setState(() {
+            currentIndex = newIndex;
+          });
+        },
+        children: screens,
+      ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.vertical(
@@ -89,7 +104,11 @@ class _HomePageState extends State<HomePage> {
           ),
           child: BottomNavigationBar(
             currentIndex: currentIndex,
-            onTap: (index) => setState(() => currentIndex = index),
+            onTap: (index) {
+              _pageController.animateToPage(index,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.ease);
+            },
             showSelectedLabels: false,
             showUnselectedLabels: false,
             elevation: 0,
