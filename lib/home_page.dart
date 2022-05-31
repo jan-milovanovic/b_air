@@ -51,73 +51,83 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Color defaultColor = Theme.of(context).colorScheme.primary;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pediatko'),
-        centerTitle: true,
-        backgroundColor: defaultColor,
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          ),
-        ),
-        leadingWidth: 70,
-        leading: IconButton(
-          icon: const Icon(Icons.logout_rounded),
-          color: Colors.white,
-          iconSize: 30,
-          //padding: const EdgeInsets.only(left: 15),
-          onPressed: () => showDialog(
+    return WillPopScope(
+      onWillPop: () async {
+        await showDialog(
             context: context,
             builder: (_) {
               return logoutDialog();
-            },
+            });
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Pediatko'),
+          centerTitle: true,
+          backgroundColor: defaultColor,
+          elevation: 0,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(20),
+            ),
+          ),
+          leadingWidth: 70,
+          leading: IconButton(
+            icon: const Icon(Icons.logout_rounded),
+            color: Colors.white,
+            iconSize: 30,
+            //padding: const EdgeInsets.only(left: 15),
+            onPressed: () => showDialog(
+              context: context,
+              builder: (_) {
+                return logoutDialog();
+              },
+            ),
           ),
         ),
-      ),
-      backgroundColor: Colors.white,
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (newIndex) {
-          setState(() {
-            currentIndex = newIndex;
-          });
-        },
-        children: screens,
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black38,
-              blurRadius: 5,
-            )
-          ],
+        backgroundColor: Colors.white,
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (newIndex) {
+            setState(() {
+              currentIndex = newIndex;
+            });
+          },
+          children: screens,
         ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-          child: BottomNavigationBar(
-            currentIndex: currentIndex,
-            onTap: (index) {
-              _pageController.animateToPage(index,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.ease);
-            },
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            elevation: 0,
-            //iconSize: 30,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.radio), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.info), label: ''),
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black38,
+                blurRadius: 5,
+              )
             ],
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+            child: BottomNavigationBar(
+              currentIndex: currentIndex,
+              onTap: (index) {
+                _pageController.animateToPage(index,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.ease);
+              },
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              elevation: 0,
+              //iconSize: 30,
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+                BottomNavigationBarItem(icon: Icon(Icons.radio), label: ''),
+                BottomNavigationBarItem(icon: Icon(Icons.info), label: ''),
+              ],
+            ),
           ),
         ),
       ),
