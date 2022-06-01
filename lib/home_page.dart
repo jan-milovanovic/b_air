@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'pages/home.dart';
@@ -7,8 +6,14 @@ import 'pages/radio.dart';
 import 'pages/webview.dart';
 
 import 'audio_data.dart';
-import 'password_manager.dart';
+import 'dialog.dart';
 
+/// homepage contains the three main windows upon logging in:
+/// Home -> grid of 6 recordings
+/// Radio -> Live playing radio Z
+/// Webview -> Page leading to a custom website
+///
+/// app bar and bottom navigation bar are shared between those windows
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -19,7 +24,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final screens = [
     const Home(),
-    const RadioPlayer(
+    RadioPlayer(
         audioData: AudioData(
             imageUrl:
                 'https://img.rtvslo.si/_up/upload/2020/04/30/65671496.jpg',
@@ -56,7 +61,7 @@ class _HomePageState extends State<HomePage> {
         await showDialog(
             context: context,
             builder: (_) {
-              return logoutDialog();
+              return logoutDialog(context);
             });
         return false;
       },
@@ -80,7 +85,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: () => showDialog(
               context: context,
               builder: (_) {
-                return logoutDialog();
+                return logoutDialog(context);
               },
             ),
           ),
@@ -131,73 +136,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-    );
-  }
-
-  AlertDialog logoutDialog() {
-    return AlertDialog(
-      title: const Text('Ste prepričani?'),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(
-          Radius.circular(20),
-        ),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          passwordExpire(),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton(
-                child: const Text(
-                  'Zapri',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                onPressed: () {
-                  Navigator.pop(context); // close dialog
-                },
-              ),
-              TextButton(
-                child: const Text('Odjavi me'),
-                onPressed: () {
-                  storage.deletePassword();
-                  Navigator.pop(context); // close dialog
-                  Navigator.pop(context); // return to login screen
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Row passwordExpire() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text('Geslo poteče: '),
-        FutureBuilder(
-          future: storage.readPassword,
-          builder: ((context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Text('...');
-            } else if (snapshot.hasError) {
-              return Text('${snapshot.error}');
-            } else {
-              DateTime parseDT = DateTime.parse(snapshot.data.toString());
-              var outputDate = DateFormat.yMMMd('sl').format(parseDT);
-
-              return Text(
-                outputDate,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              );
-            }
-          }),
-        ),
-      ],
     );
   }
 }

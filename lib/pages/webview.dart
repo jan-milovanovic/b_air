@@ -3,6 +3,10 @@ import 'dart:io';
 
 import 'package:webview_flutter/webview_flutter.dart';
 
+/// Third window of the homepage screen
+/// contains a body with webview custom page
+///
+/// TODO: Edges of bars are smooth, so white background leaks into the window
 class Webview extends StatefulWidget {
   const Webview({Key? key}) : super(key: key);
 
@@ -20,8 +24,14 @@ class WebviewState extends State<Webview> {
 
   @override
   Widget build(BuildContext context) {
-    return const WebView(
-      initialUrl: 'https://ars.rtvslo.si/b-air/',
+    return Container(
+      //padding: EdgeInsets.all(8.0),
+      child: const ClipRRect(
+        //borderRadius: BorderRadius.all(Radius.circular(20)),
+        child: WebView(
+          initialUrl: 'https://ars.rtvslo.si/b-air/',
+        ),
+      ),
     );
   }
 }
