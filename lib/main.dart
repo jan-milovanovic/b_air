@@ -47,7 +47,7 @@ class SplashScreen extends StatelessWidget {
       pageTransitionType: PageTransitionType.bottomToTop,
       animationDuration: const Duration(seconds: 1),
       //disableNavigation: true,
-      nextScreen: LoginPage(),
+      nextScreen: const LoginPage(),
     );
   }
 }
