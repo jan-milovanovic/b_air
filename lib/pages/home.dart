@@ -36,8 +36,9 @@ class _HomeState extends State<Home> {
     return Scaffold(
         backgroundColor: Colors.white,
         body: GridView(
+          padding: const EdgeInsets.only(top: 20.0),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 30.0),
+              crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 20.0),
           children: [
             buttonAudioLoader(futureAudioData3, const Color(0xffed724c)),
             buttonAudioLoader(futureAudioData1, const Color(0xffffa54b)),
@@ -80,18 +81,26 @@ class _HomeState extends State<Home> {
             return loadingIndicator();
           } else {
             return Column(children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PlaylistPage(
-                          audioDataList: snapshot.data!, color: buttonColor),
-                    ),
-                  );
-                },
-                icon: Image.network(snapshot.data![0].imageUrl),
-                iconSize: iconSize,
+              Container(
+                decoration: BoxDecoration(
+                  color: buttonColor,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+                child: IconButton(
+                  icon: Image.network(snapshot.data![0].imageUrl),
+                  iconSize: iconSize,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlaylistPage(
+                            audioDataList: snapshot.data!, color: buttonColor),
+                      ),
+                    );
+                  },
+                ),
               ),
               Text(
                 snapshot.data![0].showName,
