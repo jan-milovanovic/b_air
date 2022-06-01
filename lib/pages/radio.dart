@@ -7,7 +7,10 @@ import 'package:flutter/services.dart';
 
 import 'audioplay/control_buttons.dart';
 import '../audio_data.dart';
+import 'package:pediatko/dialog.dart';
 
+/// radio player contains a single continuous live HLS audio stream
+/// all data for the radio is hand given in the 'home_page.dart' file
 class RadioPlayer extends StatefulWidget {
   const RadioPlayer({Key? key, required this.audioData}) : super(key: key);
 
@@ -53,10 +56,9 @@ class _RadioState extends State<RadioPlayer> {
 
       await _player.setAudioSource(audio);
       _player.play();
-    } catch (e, stackTrace) {
-      // TODO: Catch load errors: 404, invalid url ...
-      //print("Error loading playlist: $e");
-      //print(stackTrace);
+    } catch (e) {
+      noInternetConnectionDialog(context, 2);
+      throw Exception('Could not load audio source');
     }
   }
 
