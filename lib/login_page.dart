@@ -4,6 +4,7 @@ import 'package:pediatko/auth/secrets.dart' as secret;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'dialog.dart';
 
 import 'password_manager.dart';
 
@@ -43,6 +44,8 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     ),
   ];
 
+  /// return true or false when checking:
+  /// if current date is less than expire date of currently used passcode
   bool checkValidDate(String? dateString) {
     if (dateString != null) {
       List<String> dateListString = dateString.split('-');
@@ -55,17 +58,33 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     return false;
   }
 
+  /// fetch passcodes from API and return a list of all passcodes + expire date
+  /// this is probably very unsafe...?
+  ///
+  /// when API cannot be fetched, open alert dialog
+  /// close the application upon clicking 'ok' button
+  ///
+  /// ONLY WORKS WITH ANDROID
+  /// iOS does not allow you to close apps (may cause a suspension)
+  /// can use exit(0), not recommended
   Future<List> getPasswordTokens() async {
-    final response = await http.get(Uri.parse(
-        'https://api.rtvslo.si/preslikave/bair?client_id=${secret.storyClientId}&_=1653382464036'));
+    try {
+      final response = await http.get(Uri.parse(
+          'https://api.rtvslo.si/preslikave/bair?client_id=${secret.storyClientId}&_=1653382464036'));
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body)['response'];
-    } else {
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body)['response'];
+      } else {
+        throw Exception('Failed to load token data');
+      }
+    } catch (e) {
       throw Exception('Failed to load token data');
     }
   }
 
+  /// checks is given passcode has not yet expired
+  /// if valid, proceed to next window (homepage)
+  /// if password is not valid, delete it from the storage, stay at login page
   void readCheckProceedPassword() async {
     try {
       String? dateExpire = await storage.readPassword;
@@ -77,7 +96,7 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         storage.deletePassword();
       }
     } catch (e) {
-      // TODO: display issue
+      throw Exception('Password read/write issue');
     }
   }
 
@@ -94,7 +113,6 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
     final double heightResized = MediaQuery.of(context).viewInsets.bottom;
     Color defaultColor = Theme.of(context).colorScheme.primary;
 
@@ -113,19 +131,19 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
               margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
               padding: const EdgeInsets.all(20),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                SizedBox(height: resized(heightResized) ? 20 : 0),
+                SizedBox(height: heightResized == 0 ? 20 : 0),
                 Icon(
                   Icons.lock,
                   size: 40,
                   color: defaultColor,
                 ),
-                SizedBox(height: resized(heightResized) ? 20 : 10),
+                SizedBox(height: heightResized == 0 ? 20 : 10),
                 welcomeText(),
-                SizedBox(height: resized(heightResized) ? 40 : 20),
+                SizedBox(height: heightResized == 0 ? 40 : 20),
                 inputField(inputFieldController),
-                SizedBox(height: resized(heightResized) ? 50 : 20),
+                SizedBox(height: heightResized == 0 ? 50 : 20),
                 continueButton(context),
-                SizedBox(height: resized(heightResized) ? 20 : 0),
+                SizedBox(height: heightResized == 0 ? 20 : 0),
               ]),
             ),
             const Spacer(flex: 1),
@@ -133,10 +151,8 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         ));
   }
 
-  bool resized(double heightResized) {
-    return heightResized == 0;
-  }
-
+  /// displays a multiline welcome text
+  /// this is necessary due to different text styles between rows
   RichText welcomeText() {
     return RichText(
         textAlign: TextAlign.center,
@@ -150,6 +166,7 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
             ]));
   }
 
+  /// TODO: after api fix to numbers only, change keyboard type and regexp
   TextField inputField(inputFieldController) {
     return TextField(
       textAlign: TextAlign.center,
@@ -185,6 +202,8 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     );
   }
 
+  /// checks if password is equal to the list of passwords previously acquired
+  /// make sure the password has not expired yet
   Future<bool> checkValid(Future<List> tokenList, String password) {
     return tokenList.then((list) {
       for (var tokenData in list) {
@@ -198,22 +217,30 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     });
   }
 
+  /// false login attempt will alert user by coloring and animating the check mark
+  /// a successful login will color the check mark green and proceed to next window
   void login(BuildContext context, String password) async {
-    bool valid = await checkValid(tokenList, password);
+    try {
+      bool valid = await checkValid(tokenList, password);
 
-    if (valid) {
-      setState(() {
-        checkStateIndex = 1;
-      });
-      Navigator.push(context, homePageAnimation());
-    } else {
-      setState(() {
-        checkStateIndex = 2;
-      });
-      _checkmarkController.forward(from: 0.0);
+      if (valid) {
+        setState(() {
+          checkStateIndex = 1;
+        });
+        Navigator.push(context, homePageAnimation());
+      } else {
+        setState(() {
+          checkStateIndex = 2;
+        });
+        _checkmarkController.forward(from: 0.0);
+      }
+    } catch (e) {
+      noInternetConnectionDialog(context, -1);
     }
   }
 
+  /// animation to homepage is a 'fade' animation
+  /// duration: 1 second
   Route homePageAnimation() {
     return PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
