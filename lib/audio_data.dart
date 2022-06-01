@@ -60,7 +60,7 @@ Future<List<AudioData>> getTrack(context, String showID) async {
     final response = await http
         .get(Uri.parse(
             'https://api.rtvslo.si/ava/getSearch2?client_id=${secret.storyClientId}&pageNumber=0&pageSize=12&sort=date&order=desc&showId=$showID'))
-        .timeout(const Duration(seconds: 5));
+        .timeout(const Duration(seconds: 10));
 
     if (response.statusCode == 200) {
       final int recNumber = getNumberOfRecordings(jsonDecode(response.body));
@@ -73,14 +73,11 @@ Future<List<AudioData>> getTrack(context, String showID) async {
 
       return audioData;
     } else {
-      //noInternetConnectionDialog(context);
       throw Exception('Failed to load audio data (url not reachable)');
     }
   } on TimeoutException {
-    //noInternetConnectionDialog(context);
     throw TimeoutException('Failed to load audio data');
   } catch (e) {
-    //noInternetConnectionDialog(context);
     throw Exception('Failed to load audio data: $e');
   }
 }
