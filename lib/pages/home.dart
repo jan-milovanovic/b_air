@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../audio_data.dart';
 import 'playlist.dart';
-import 'package:pediatko/dialog.dart';
 
-/// Home class contains a grid of all 6 given recordings
-/// grid may be vertically scrollable if device is on smaller side
-/// each track contains specific color data, which is sent to next windows
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -19,16 +15,32 @@ class _HomeState extends State<Home> {
   late Future<List<AudioData>> futureAudioData1;
   late Future<List<AudioData>> futureAudioData2;
   late Future<List<AudioData>> futureAudioData3;
-  int audioDataNumber = 6;
-  int errorCounter = 0;
 
   @override
   void initState() {
     super.initState();
-    futureAudioData1 = getTrack(context, '173250372'); // radijske igre
-    futureAudioData2 = getTrack(context, '161851955'); // zgodbe iz skoljke
-    futureAudioData3 = getTrack(context, '54'); // za lahko noc
+    futureAudioData1 = getTrack('173250372'); // radijske igre
+    futureAudioData2 = getTrack('161851955'); // zgodbe iz skoljke
+    futureAudioData3 = getTrack('54'); // za lahko noc
   }
+
+/*
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ListView(
+        children: [
+          paddedText("Za pomiritev"),
+          audioLoader(futureAudioData1),
+          paddedText("Pred posegom"),
+          audioLoader(futureAudioData2),
+          paddedText("Za lahko noč"),
+          audioLoader(futureAudioData3),
+        ],
+      ),
+    );
+  }
+*/
 
   /// grid renders from top left to bottom right
   @override
@@ -49,14 +61,6 @@ class _HomeState extends State<Home> {
         ));
   }
 
-  /// builds grid widgets based on future audio data
-  ///
-  /// a specific widget can fail to load, will display error message instead of
-  /// the recording that is supposed to load
-  /// Example: if track does not exist, widget will display center text: 'null'
-  ///
-  /// upon all widgets failing to load -> alert dialog is opened notifying user
-  /// to check their connection. Leads user back to login screen (pop x2)
   SizedBox buttonAudioLoader(
       Future<List<AudioData>> futureAudioData, Color buttonColor) {
     final height = MediaQuery.of(context).size.height;
@@ -67,17 +71,10 @@ class _HomeState extends State<Home> {
       child: FutureBuilder<List<AudioData>>(
         future: futureAudioData,
         builder: ((context, snapshot) {
-          if (snapshot.hasError ||
-              (snapshot.hasData && snapshot.data!.isEmpty)) {
-            if (++errorCounter == audioDataNumber) {
-              Future.delayed(
-                  Duration.zero, () => noInternetConnectionDialog(context, 2));
-              return Center(child: Text('${snapshot.error}'));
-            } else {
-              return Center(child: Text('${snapshot.error}'));
-            }
-          } else if (!snapshot.hasData) {
+          if (!snapshot.hasData) {
             return loadingIndicator();
+          } else if (snapshot.hasError) {
+            return Text('${snapshot.error}');
           } else {
             return Column(children: [
               IconButton(
@@ -104,6 +101,23 @@ class _HomeState extends State<Home> {
     );
   }
 
+/*
+  Dialog displayRecordingsList(List<AudioData> data) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 10,
+      child: Container(
+        color: Colors.blue,
+        child: ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (BuildContext buildContext, int index) {
+              return SizedBox(child: Text(data[index].title));
+            }),
+      ),
+    );
+  }
+*/
+
   Padding paddedText(String text) {
     return Padding(
       padding: const EdgeInsets.only(top: 20, left: 10),
@@ -119,8 +133,6 @@ class _HomeState extends State<Home> {
         alignment: Alignment.center, child: const CircularProgressIndicator());
   }
 
-  @Deprecated("""function is replaced in favor of [buttonAudioLoader], due to
-  changes in design and will be removed in the future""")
   SizedBox audioLoader(Future<List<AudioData>> futureAudioData, Color color) {
     final height = MediaQuery.of(context).size.height;
     final iconSize = height / 6;

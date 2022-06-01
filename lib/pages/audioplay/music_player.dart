@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'player_seekbar.dart';
-import 'package:pediatko/dialog.dart';
 
 class MusicPlayer extends StatefulWidget {
   final String url;
@@ -67,9 +66,10 @@ class _MusicPlayerState extends State<MusicPlayer> {
     });
     try {
       await _player.setAudioSource(_playlist);
-    } catch (e) {
-      noInternetConnectionDialog(context, 2);
-      throw Exception('Could not load audio source');
+    } catch (e, stackTrace) {
+      // TODO: Catch load errors: 404, invalid url ...
+      //print("Error loading playlist: $e");
+      //print(stackTrace);
     }
   }
 

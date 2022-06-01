@@ -7,18 +7,12 @@ import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
 import 'audioplay/player_seekbar.dart';
 import 'audioplay/control_buttons.dart';
 import '../audio_data.dart';
 import '../auth/secrets.dart' as secret;
-import 'package:pediatko/dialog.dart';
 
-/// This is a player specifically for recordings
-/// It has a different UI compared to the radio player
-/// Player fetches all needed audio data, creates a fitting audio source to play
-///
-/// Do not remove 'hls' and 'hls_sec'
-/// some files, although not live, are given in those formats
 class RecordingPlayer extends StatefulWidget {
   const RecordingPlayer(
       {Key? key, required this.audioData, required this.color})
@@ -115,9 +109,10 @@ class _RecordingState extends State<RecordingPlayer> {
 
       await _player.setAudioSource(audio);
       _player.play();
-    } catch (e) {
-      noInternetConnectionDialog(context, 2);
-      throw Exception('$e');
+    } catch (e, stackTrace) {
+      // TODO: Catch load errors: 404, invalid url ...
+      //print("Error loading playlist: $e");
+      //print(stackTrace);
     }
   }
 
@@ -202,14 +197,11 @@ class _RecordingState extends State<RecordingPlayer> {
                                       color: widget.color),
                                 ),
                                 const SizedBox(height: 10),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Text(
-                                    metadata.title,
-                                    style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
+                                Text(
+                                  metadata.title,
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 20),
                                 SizedBox(

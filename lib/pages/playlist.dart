@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pediatko/audio_data.dart';
 
-/// playlist page displays data for a single recording album
-/// text description is scrollable with a FIXED height
-/// half of mobile screen should display all avail. audio in a scrollable form
-/// specific recording texts text may also be scrolled horizontally (length)
 class PlaylistPage extends StatelessWidget {
   const PlaylistPage(
       {Key? key, required this.audioDataList, required this.color})
@@ -118,8 +114,6 @@ class PlaylistPage extends StatelessWidget {
         ));
   }
 
-  /// function removes the last index divider which would appear at the bottom
-  /// of the screen and is not wanted in the UI
   divideBetween(int listLength, int index) {
     return listLength > (index + 1)
         ? const Divider(
