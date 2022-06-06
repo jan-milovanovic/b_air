@@ -50,7 +50,7 @@ class _RadioState extends State<RadioPlayer> {
         tag: MediaItem(
           id: '0',
           title: widget.audioData.title,
-          artUri: Uri.parse(widget.audioData.imageUrl),
+          artUri: Uri.parse(widget.audioData.imageUrl!),
         ),
       );
 
