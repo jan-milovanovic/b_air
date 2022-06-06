@@ -92,8 +92,7 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         body: Column(
           children: [
             const Spacer(flex: 1),
-            const Text('Pediatko',
-                style: TextStyle(fontSize: 50, color: Colors.white)),
+            Image.asset('assets/pediatko-logo.png', height: 50),
             const Spacer(flex: 1),
             Container(
               decoration: const BoxDecoration(

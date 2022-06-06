@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
             showDescription: 'radio',
             url:
                 'https://di-br2e5p7r.a.eurovisionflow.net/radiodvr/otp/playlist.m3u8')),
-    const Webview()
+    const Webview(),
   ];
 
   int currentIndex = 0;
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Pediatko'),
+          title: Image.asset('assets/pediatko-logo.png', height: 25),
           centerTitle: true,
           backgroundColor: defaultColor,
           elevation: 0,

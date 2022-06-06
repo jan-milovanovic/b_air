@@ -89,7 +89,7 @@ class _RecordingState extends State<RecordingPlayer> {
             album: widget.audioData.showName,
             title: widget.audioData.title,
             displayDescription: widget.audioData.titleDescription,
-            artUri: Uri.parse(widget.audioData.imageUrl),
+            artUri: Uri.file('assets/radioZ.png'),
           ),
         );
       } else {
@@ -108,7 +108,7 @@ class _RecordingState extends State<RecordingPlayer> {
             album: widget.audioData.showName,
             title: widget.audioData.title,
             displayDescription: widget.audioData.titleDescription,
-            artUri: Uri.parse(widget.audioData.imageUrl),
+            artUri: Uri.file('assets/radioZ.png'),
           ),
         );
       }
@@ -144,7 +144,7 @@ class _RecordingState extends State<RecordingPlayer> {
       home: Scaffold(
         backgroundColor: widget.color,
         appBar: AppBar(
-          title: const Text('Pediatko'),
+          title: Image.asset('assets/pediatko-logo.png', height: 25),
           centerTitle: true,
           backgroundColor: widget.color,
           elevation: 0,

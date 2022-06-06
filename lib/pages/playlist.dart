@@ -22,7 +22,7 @@ class PlaylistPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Pediatko'),
+          title: Image.asset('assets/pediatko-logo.png', height: 25),
           centerTitle: true,
           backgroundColor: color,
           elevation: 0,
@@ -34,9 +34,7 @@ class PlaylistPage extends StatelessWidget {
             const Spacer(flex: 1),
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image(
-                  image: NetworkImage(audioDataList[0].imageUrl),
-                  width: width / 3),
+              child: SizedBox(child: audioDataList[0].image, width: width / 3),
             ),
             const SizedBox(height: 10),
             Text(
