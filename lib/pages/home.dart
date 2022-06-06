@@ -19,15 +19,27 @@ class _HomeState extends State<Home> {
   late Future<List<AudioData>> futureAudioData1;
   late Future<List<AudioData>> futureAudioData2;
   late Future<List<AudioData>> futureAudioData3;
+  late Future<List<AudioData>> futureAudioData4;
+  late Future<List<AudioData>> futureAudioData5;
+  late Future<List<AudioData>> futureAudioData6;
   int audioDataNumber = 6;
   int errorCounter = 0;
 
   @override
   void initState() {
     super.initState();
-    futureAudioData1 = getTrack(context, '173250372'); // radijske igre
-    futureAudioData2 = getTrack(context, '161851955'); // zgodbe iz skoljke
-    futureAudioData3 = getTrack(context, '54'); // za lahko noc
+    futureAudioData1 = getTrack(context, '173250372',
+        Image.asset('assets/images/Sobane-za-velikane.png'));
+    futureAudioData2 = getTrack(
+        context, '161851955', Image.asset('assets/images/Ustvarjam.png'));
+    futureAudioData3 = getTrack(context, '54',
+        Image.asset('assets/images/Najbolj-carobna-potovanja.png'));
+    futureAudioData4 = getTrack(
+        context, '97041869', Image.asset('assets/images/Igrajmo-se.png'));
+    futureAudioData5 = getTrack(context, '47861243',
+        Image.asset('assets/images/In-da-cas-hitreje-mine.png'));
+    futureAudioData6 =
+        getTrack(context, '88', Image.asset('assets/images/Za-miren-sen.png'));
   }
 
   /// grid renders from top left to bottom right
@@ -36,16 +48,16 @@ class _HomeState extends State<Home> {
     return Scaffold(
         backgroundColor: Colors.white,
         body: GridView(
-          padding: const EdgeInsets.only(top: 20.0),
+          padding: const EdgeInsets.all(20.0),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 20.0),
+              crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 30.0),
           children: [
-            buttonAudioLoader(futureAudioData3, const Color(0xffed724c)),
-            buttonAudioLoader(futureAudioData1, const Color(0xffffa54b)),
-            buttonAudioLoader(futureAudioData1, const Color(0xffed5875)),
-            buttonAudioLoader(futureAudioData2, const Color(0xff39b070)),
-            buttonAudioLoader(futureAudioData2, const Color(0xffe05251)),
-            buttonAudioLoader(futureAudioData3, const Color(0xff7566ac)),
+            buttonAudioLoader(futureAudioData1, const Color(0xffed724c)),
+            buttonAudioLoader(futureAudioData2, const Color(0xffffa54b)),
+            buttonAudioLoader(futureAudioData3, const Color(0xffed5875)),
+            buttonAudioLoader(futureAudioData4, const Color(0xff39b070)),
+            buttonAudioLoader(futureAudioData5, const Color(0xffe05251)),
+            buttonAudioLoader(futureAudioData6, const Color(0xff7566ac)),
           ],
         ));
   }
@@ -61,10 +73,10 @@ class _HomeState extends State<Home> {
   SizedBox buttonAudioLoader(
       Future<List<AudioData>> futureAudioData, Color buttonColor) {
     final height = MediaQuery.of(context).size.height;
-    final iconSize = height / 6;
+    final iconSize = height * 0.14;
 
     return SizedBox(
-      height: height / 4,
+      height: height * 0.5,
       child: FutureBuilder<List<AudioData>>(
         future: futureAudioData,
         builder: ((context, snapshot) {
@@ -89,7 +101,8 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 child: IconButton(
-                  icon: Image.network(snapshot.data![0].imageUrl),
+                  padding: const EdgeInsets.all(15),
+                  icon: snapshot.data![0].image!,
                   iconSize: iconSize,
                   onPressed: () {
                     Navigator.push(
@@ -102,9 +115,15 @@ class _HomeState extends State<Home> {
                   },
                 ),
               ),
-              Text(
-                snapshot.data![0].showName,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: iconSize + 30, // icon + 2*padding border
+                child: Text(
+                  snapshot.data![0].showName,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               ),
             ]);
           }
@@ -153,7 +172,7 @@ class _HomeState extends State<Home> {
                   child: Column(
                     children: [
                       IconButton(
-                        icon: Image.network(snapshot.data![index].imageUrl),
+                        icon: snapshot.data![index].image!,
                         iconSize: iconSize,
                         onPressed: () {
                           snapshot.data![index].playAudio(context, color);
