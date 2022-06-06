@@ -1,13 +1,10 @@
-import 'dart:convert';
-
-import 'package:pediatko/auth/secrets.dart' as secret;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'dialog.dart';
 
 import 'password_manager.dart';
 
+import 'preslikave.dart';
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,7 +17,6 @@ class LoginPage extends StatefulWidget {
 class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   final inputFieldController = TextEditingController();
 
-  late final Future<List> tokenList;
   late AnimationController _checkmarkController;
 
   /// checkmark icon in input field
@@ -58,30 +54,6 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     return false;
   }
 
-  /// fetch passcodes from API and return a list of all passcodes + expire date
-  /// this is probably very unsafe...?
-  ///
-  /// when API cannot be fetched, open alert dialog
-  /// close the application upon clicking 'ok' button
-  ///
-  /// ONLY WORKS WITH ANDROID
-  /// iOS does not allow you to close apps (may cause a suspension)
-  /// can use exit(0), not recommended
-  Future<List> getPasswordTokens() async {
-    try {
-      final response = await http.get(Uri.parse(
-          'https://api.rtvslo.si/preslikave/bair?client_id=${secret.storyClientId}&_=1653382464036'));
-
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body)['response'];
-      } else {
-        throw Exception('Failed to load token data');
-      }
-    } catch (e) {
-      throw Exception('Failed to load token data');
-    }
-  }
-
   /// checks is given passcode has not yet expired
   /// if valid, proceed to next window (homepage)
   /// if password is not valid, delete it from the storage, stay at login page
@@ -104,7 +76,6 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     readCheckProceedPassword();
-    tokenList = getPasswordTokens();
     inputFieldController.clear();
 
     _checkmarkController = AnimationController(
@@ -166,14 +137,16 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
             ]));
   }
 
-  /// TODO: after api fix to numbers only, change keyboard type and regexp
+  /// number type input field, accepts only number input
+  /// also includes the suffix and prefix icons
+  /// both are (necessary?) for "centering" text
   TextField inputField(inputFieldController) {
     return TextField(
       textAlign: TextAlign.center,
       controller: inputFieldController,
-      keyboardType: TextInputType.text,
+      keyboardType: TextInputType.number,
       inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z]'))
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
       ],
       decoration: InputDecoration(
         hintText: 'Vnesite aktivacijsko kodo',
@@ -204,24 +177,29 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   /// checks if password is equal to the list of passwords previously acquired
   /// make sure the password has not expired yet
-  Future<bool> checkValid(Future<List> tokenList, String password) {
-    return tokenList.then((list) {
-      for (var tokenData in list) {
-        if (password == tokenData['token'] &&
-            checkValidDate(tokenData['expires'])) {
-          storage.writePassword = tokenData['expires'];
-          return true;
-        }
+  bool checkValid(List tokenList, String password) {
+    for (var tokenData in tokenList) {
+      if (password == tokenData['token'] &&
+          checkValidDate(tokenData['expires'])) {
+        storage.writePassword = tokenData['expires'];
+        return true;
       }
-      return false;
-    });
+    }
+    return false;
   }
 
   /// false login attempt will alert user by coloring and animating the check mark
   /// a successful login will color the check mark green and proceed to next window
+  ///
+  /// on exception open alert dialog
+  /// close the application upon clicking 'ok' button
+  /// ONLY WORKS WITH ANDROID
+  /// iOS does not allow you to close apps (may cause a suspension)
+  /// can use exit(0), not recommended
   void login(BuildContext context, String password) async {
     try {
-      bool valid = await checkValid(tokenList, password);
+      bool valid =
+          checkValid(await preslikava.then((value) => value.tokens), password);
 
       if (valid) {
         setState(() {
