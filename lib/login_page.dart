@@ -202,12 +202,6 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   /// false login attempt will alert user by coloring and animating the check mark
   /// a successful login will color the check mark green and proceed to next window
-  ///
-  /// on exception open alert dialog
-  /// close the application upon clicking 'ok' button
-  /// ONLY WORKS WITH ANDROID
-  /// iOS does not allow you to close apps (may cause a suspension)
-  /// can use exit(0), not recommended
   void login(BuildContext context, String password) async {
     bool valid;
 
