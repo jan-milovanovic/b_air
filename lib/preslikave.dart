@@ -2,19 +2,34 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:pediatko/auth/secrets.dart' as secret;
-
-Future<Preslikave> preslikava = getTransformation();
+import 'show.dart';
 
 class Preslikave {
   final List tokens;
   final String infoPageUrl;
+  final List<Show> showData;
 
-  Preslikave({required this.tokens, required this.infoPageUrl});
+  Preslikave(
+      {required this.tokens,
+      required this.infoPageUrl,
+      required this.showData});
 
   factory Preslikave.fromJson(response) {
+    List<Show> firstPage = [];
+
+    for (var show in response['first_page']) {
+      firstPage.add(Show(
+          showId: show['showId'],
+          title: show['title'],
+          iconUrl: show['icon_url'],
+          bgColor: show['bg_color'] ?? show['color']));
+    }
+
     return Preslikave(
-        tokens: response['tokens'],
-        infoPageUrl: response['settings']['info_page_url']);
+      tokens: response['tokens'],
+      infoPageUrl: response['settings']['info_page_url'],
+      showData: firstPage,
+    );
   }
 }
 

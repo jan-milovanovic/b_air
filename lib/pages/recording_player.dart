@@ -89,7 +89,7 @@ class _RecordingState extends State<RecordingPlayer> {
             album: widget.audioData.showName,
             title: widget.audioData.title,
             displayDescription: widget.audioData.titleDescription,
-            artUri: Uri.file('assets/radioZ.png'),
+            artUri: Uri.parse(widget.audioData.imageUrl!),
           ),
         );
       } else {
@@ -108,7 +108,7 @@ class _RecordingState extends State<RecordingPlayer> {
             album: widget.audioData.showName,
             title: widget.audioData.title,
             displayDescription: widget.audioData.titleDescription,
-            artUri: Uri.file('assets/radioZ.png'),
+            artUri: Uri.parse(widget.audioData.imageUrl!),
           ),
         );
       }
@@ -184,14 +184,16 @@ class _RecordingState extends State<RecordingPlayer> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image(
-                                    image: NetworkImage(
-                                        metadata.artUri.toString()),
-                                    //width: width / 3,
-                                    height: height * 0.169,
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: widget.color,
                                   ),
+                                  child:
+                                      Image.network(metadata.artUri.toString()),
+                                  //width: width / 3,
+                                  height: height * 0.169,
                                 ),
                                 const SizedBox(height: 10),
                                 Text(

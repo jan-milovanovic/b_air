@@ -5,6 +5,7 @@ import 'pages/home.dart';
 import 'pages/radio.dart';
 import 'pages/webview.dart';
 
+import 'show.dart';
 import 'audio_data.dart';
 import 'dialog.dart';
 
@@ -15,27 +16,18 @@ import 'dialog.dart';
 ///
 /// app bar and bottom navigation bar are shared between those windows
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({Key? key, required this.infoPageUrl, required this.showData})
+      : super(key: key);
+
+  final String infoPageUrl;
+  final List<Show> showData;
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final screens = [
-    const Home(),
-    RadioPlayer(
-        audioData: AudioData(
-            imageUrl:
-                'https://img.rtvslo.si/_up/upload/2020/04/30/65671496.jpg',
-            title: 'Radio Z',
-            titleDescription: 'this is a radio..',
-            showName: 'Radio Z',
-            showDescription: 'radio',
-            url:
-                'https://di-br2e5p7r.a.eurovisionflow.net/radiodvr/otp/playlist.m3u8')),
-    const Webview(),
-  ];
+  late final List<Widget> screens;
 
   int currentIndex = 0;
   final PageController _pageController = PageController(initialPage: 0);
@@ -44,6 +36,21 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     initializeDateFormatting();
+
+    screens = [
+      Home(showData: widget.showData),
+      RadioPlayer(
+          audioData: AudioData(
+              imageUrl:
+                  'https://img.rtvslo.si/_up/upload/2020/04/30/65671496.jpg',
+              title: 'Radio Z',
+              titleDescription: 'this is a radio..',
+              showName: 'Radio Z',
+              showDescription: 'radio',
+              url:
+                  'https://di-br2e5p7r.a.eurovisionflow.net/radiodvr/otp/playlist.m3u8')),
+      Webview(url: widget.infoPageUrl),
+    ];
   }
 
   @override

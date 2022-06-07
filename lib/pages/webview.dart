@@ -9,7 +9,9 @@ import 'package:pediatko/preslikave.dart';
 ///
 /// TODO: Edges of bars are smooth, so white background leaks into the window
 class Webview extends StatefulWidget {
-  const Webview({Key? key}) : super(key: key);
+  const Webview({Key? key, required this.url}) : super(key: key);
+
+  final String url;
 
   @override
   WebviewState createState() => WebviewState();
@@ -29,21 +31,7 @@ class WebviewState extends State<Webview> {
       //padding: EdgeInsets.all(8.0),
       child: ClipRRect(
         //borderRadius: BorderRadius.all(Radius.circular(20)),
-        child: FutureBuilder<Preslikave>(
-            future: preslikava,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return const WebView(
-                    initialUrl: 'https://ars.rtvslo.si/b-air/');
-              }
-              if (snapshot.hasData) {
-                return WebView(initialUrl: snapshot.data!.infoPageUrl);
-              } else {
-                return Container(
-                    alignment: Alignment.center,
-                    child: const CircularProgressIndicator());
-              }
-            }),
+        child: WebView(initialUrl: widget.url),
       ),
     );
   }

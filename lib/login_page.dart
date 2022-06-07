@@ -19,6 +19,8 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   late AnimationController _checkmarkController;
 
+  late Future<Preslikave> preslikava;
+
   /// checkmark icon in input field
   /// 0 = neutral, 1 = success, 2 = invalid (login)
   int checkStateIndex = 0;
@@ -62,8 +64,15 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       String? dateExpire = await storage.readPassword;
 
       if (checkValidDate(dateExpire)) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const HomePage()));
+        preslikava.then(
+          (value) => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => HomePage(
+                        infoPageUrl: value.infoPageUrl,
+                        showData: value.showData,
+                      ))),
+        );
       } else {
         storage.deletePassword();
       }
@@ -75,6 +84,7 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    preslikava = getTransformation();
     readCheckProceedPassword();
     inputFieldController.clear();
 
@@ -196,21 +206,26 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   /// iOS does not allow you to close apps (may cause a suspension)
   /// can use exit(0), not recommended
   void login(BuildContext context, String password) async {
-    try {
-      bool valid =
-          checkValid(await preslikava.then((value) => value.tokens), password);
+    bool valid;
 
-      if (valid) {
-        setState(() {
-          checkStateIndex = 1;
-        });
-        Navigator.push(context, homePageAnimation());
-      } else {
-        setState(() {
-          checkStateIndex = 2;
-        });
-        _checkmarkController.forward(from: 0.0);
-      }
+    try {
+      preslikava.then((value) => {
+            valid = checkValid(value.tokens, password),
+            if (valid)
+              {
+                setState(() {
+                  checkStateIndex = 1;
+                }),
+                Navigator.push(context, homePageAnimation(value)),
+              }
+            else
+              {
+                setState(() {
+                  checkStateIndex = 2;
+                }),
+                _checkmarkController.forward(from: 0.0),
+              }
+          });
     } catch (e) {
       noInternetConnectionDialog(context, -1);
     }
@@ -218,10 +233,10 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   /// animation to homepage is a 'fade' animation
   /// duration: 1 second
-  Route homePageAnimation() {
+  Route homePageAnimation(Preslikave p) {
     return PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            const HomePage(),
+            HomePage(infoPageUrl: p.infoPageUrl, showData: p.showData),
         transitionDuration: const Duration(seconds: 1),
         reverseTransitionDuration: const Duration(milliseconds: 500),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
