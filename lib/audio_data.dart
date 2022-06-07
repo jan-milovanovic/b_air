@@ -17,9 +17,8 @@ import 'show.dart';
 ///
 /// image for everything else
 class AudioData {
-  final Image? image;
-  final String? imageUrl;
   final String title;
+  final String imageUrl;
   final String titleDescription;
   final String showName;
   final String showDescription;
@@ -29,13 +28,12 @@ class AudioData {
 
   AudioData(
       {required this.title,
+      required this.imageUrl,
       required this.titleDescription,
       required this.showName,
       required this.showDescription,
       required this.url,
       this.id,
-      this.image,
-      this.imageUrl,
       this.bgColor});
 
   void playAudio(BuildContext context, Color color) {
@@ -46,22 +44,8 @@ class AudioData {
                 RecordingPlayer(audioData: this, color: color)));
   }
 
-  factory AudioData.fromJson(
-      Map<String, dynamic> json, int i, Show showData, Image image) {
-    //String imageUrl;
-
-    /**
-     * @Deprecated
-     * This will get removed in the future
-    if (json['response']['recordings'][i]['podcast_thumbnail'] != null) {
-      imageUrl = json['response']['recordings'][i]['podcast_thumbnail']['md'];
-    } else {
-      imageUrl = json['response']['recordings'][i]['images']['wide1'];
-    }
-    */
-
+  factory AudioData.fromJson(Map<String, dynamic> json, int i, Show showData) {
     return AudioData(
-      image: image,
       imageUrl: showData.iconUrl,
       title: json['response']['recordings'][i]['title'],
       titleDescription: json['response']['recordings'][i]['description'],
@@ -75,7 +59,7 @@ class AudioData {
   }
 }
 
-Future<List<AudioData>> getTrack(context, Show showData, Image image) async {
+Future<List<AudioData>> getTrack(context, Show showData) async {
   try {
     final response = await http
         .get(Uri.parse(
@@ -88,8 +72,8 @@ Future<List<AudioData>> getTrack(context, Show showData, Image image) async {
       List<AudioData> audioData = [];
 
       for (int i = 0; i < recNumber; i++) {
-        audioData.add(
-            AudioData.fromJson(jsonDecode(response.body), i, showData, image));
+        audioData
+            .add(AudioData.fromJson(jsonDecode(response.body), i, showData));
       }
 
       return audioData;
