@@ -66,12 +66,13 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       if (checkValidDate(dateExpire)) {
         preslikava.then(
           (value) => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => HomePage(
-                        infoPageUrl: value.infoPageUrl,
-                        showData: value.showData,
-                      ))),
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage(
+                preslikava: value,
+              ),
+            ),
+          ),
         );
       } else {
         storage.deletePassword();
@@ -84,7 +85,7 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    preslikava = getTransformation();
+    preslikava = getTransformation(context);
     readCheckProceedPassword();
     inputFieldController.clear();
 
@@ -98,52 +99,55 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     Color defaultColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-        backgroundColor: defaultColor,
-        body: Column(
-          children: [
-            const Spacer(flex: 1),
-            Image.asset('assets/pediatko-logo.png', height: 50),
-            const Spacer(flex: 1),
-            Container(
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: Colors.white),
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-              padding: const EdgeInsets.all(20),
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                SizedBox(height: heightResized == 0 ? 20 : 0),
-                Icon(
-                  Icons.lock,
-                  size: 40,
-                  color: defaultColor,
-                ),
-                SizedBox(height: heightResized == 0 ? 20 : 10),
-                welcomeText(),
-                SizedBox(height: heightResized == 0 ? 40 : 20),
-                inputField(inputFieldController),
-                SizedBox(height: heightResized == 0 ? 50 : 20),
-                continueButton(context),
-                SizedBox(height: heightResized == 0 ? 20 : 0),
-              ]),
-            ),
-            const Spacer(flex: 1),
-          ],
-        ));
+      backgroundColor: defaultColor,
+      body: Column(
+        children: [
+          const Spacer(flex: 1),
+          Image.asset('assets/pediatko-logo.png', height: 50),
+          const Spacer(flex: 1),
+          Container(
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: Colors.white),
+            margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            padding: const EdgeInsets.all(20),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              SizedBox(height: heightResized == 0 ? 20 : 0),
+              Icon(
+                Icons.lock,
+                size: 40,
+                color: defaultColor,
+              ),
+              SizedBox(height: heightResized == 0 ? 20 : 10),
+              welcomeText(),
+              SizedBox(height: heightResized == 0 ? 40 : 20),
+              inputField(inputFieldController),
+              SizedBox(height: heightResized == 0 ? 50 : 20),
+              continueButton(context),
+              SizedBox(height: heightResized == 0 ? 20 : 0),
+            ]),
+          ),
+          const Spacer(flex: 1),
+        ],
+      ),
+    );
   }
 
   /// displays a multiline welcome text
   /// this is necessary due to different text styles between rows
   RichText welcomeText() {
     return RichText(
-        textAlign: TextAlign.center,
-        text: const TextSpan(
-            style: TextStyle(fontSize: 24, color: Colors.black),
-            children: <TextSpan>[
-              TextSpan(text: 'Dobrodošli,\n'),
-              TextSpan(
-                  text: 'vse bo vredu :)',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-            ]));
+      textAlign: TextAlign.center,
+      text: const TextSpan(
+        style: TextStyle(fontSize: 24, color: Colors.black),
+        children: <TextSpan>[
+          TextSpan(text: 'Dobrodošli,\n'),
+          TextSpan(
+              text: 'vse bo vredu :)',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
   }
 
   /// number type input field, accepts only number input
@@ -209,25 +213,23 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     bool valid;
 
     try {
-      preslikava.then((value) => {
-            valid = checkValid(value.tokens, password),
-            if (valid)
-              {
-                setState(() {
-                  checkStateIndex = 1;
-                }),
-                Navigator.push(context, homePageAnimation(value)),
-              }
-            else
-              {
-                setState(() {
-                  checkStateIndex = 2;
-                }),
-                _checkmarkController.forward(from: 0.0),
-              }
-          });
+      Preslikave p = await preslikava.then((value) => value);
+
+      valid = checkValid(p.tokens, password);
+      if (valid) {
+        setState(() {
+          checkStateIndex = 1;
+        });
+        Navigator.push(context, homePageAnimation(p));
+      } else {
+        setState(() {
+          checkStateIndex = 2;
+        });
+        _checkmarkController.forward(from: 0.0);
+      }
     } catch (e) {
-      noInternetConnectionDialog(context, -1);
+      preslikava = getTransformation(context);
+      //noInternetConnectionDialog(context, -1);
     }
   }
 
@@ -235,16 +237,17 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   /// duration: 1 second
   Route homePageAnimation(Preslikave p) {
     return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            HomePage(infoPageUrl: p.infoPageUrl, showData: p.showData),
-        transitionDuration: const Duration(seconds: 1),
-        reverseTransitionDuration: const Duration(milliseconds: 500),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
-        });
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          HomePage(preslikava: p),
+      transitionDuration: const Duration(seconds: 1),
+      reverseTransitionDuration: const Duration(milliseconds: 500),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      },
+    );
   }
 
   animatedCheckIcon() {
@@ -253,14 +256,15 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         .animate(_checkmarkController);
 
     return AnimatedBuilder(
-        animation: offsetAnimation,
-        builder: (buildContext, child) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: 10 - offsetAnimation.value,
-            ),
-            child: checkState[checkStateIndex],
-          );
-        });
+      animation: offsetAnimation,
+      builder: (buildContext, child) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: 10 - offsetAnimation.value,
+          ),
+          child: checkState[checkStateIndex],
+        );
+      },
+    );
   }
 }
