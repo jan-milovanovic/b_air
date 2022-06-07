@@ -89,7 +89,7 @@ class _RecordingState extends State<RecordingPlayer> {
             album: widget.audioData.showName,
             title: widget.audioData.title,
             displayDescription: widget.audioData.titleDescription,
-            artUri: Uri.parse(widget.audioData.imageUrl!),
+            artUri: Uri.parse(widget.audioData.imageUrl),
           ),
         );
       } else {
@@ -108,7 +108,7 @@ class _RecordingState extends State<RecordingPlayer> {
             album: widget.audioData.showName,
             title: widget.audioData.title,
             displayDescription: widget.audioData.titleDescription,
-            artUri: Uri.parse(widget.audioData.imageUrl!),
+            artUri: Uri.parse(widget.audioData.imageUrl),
           ),
         );
       }
@@ -192,7 +192,6 @@ class _RecordingState extends State<RecordingPlayer> {
                                   ),
                                   child:
                                       Image.network(metadata.artUri.toString()),
-                                  //width: width / 3,
                                   height: height * 0.169,
                                 ),
                                 const SizedBox(height: 10),

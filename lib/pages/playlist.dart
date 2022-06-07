@@ -34,7 +34,7 @@ class PlaylistPage extends StatelessWidget {
             const Spacer(flex: 1),
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: SizedBox(child: audioDataList[0].image, width: width / 3),
+              child: Image.network(audioDataList[0].imageUrl, width: width / 3),
             ),
             const SizedBox(height: 10),
             Text(

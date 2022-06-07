@@ -8,6 +8,7 @@ import 'pages/webview.dart';
 import 'show.dart';
 import 'audio_data.dart';
 import 'dialog.dart';
+import 'preslikave.dart';
 
 /// homepage contains the three main windows upon logging in:
 /// Home -> grid of 6 recordings
@@ -16,11 +17,9 @@ import 'dialog.dart';
 ///
 /// app bar and bottom navigation bar are shared between those windows
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.infoPageUrl, required this.showData})
-      : super(key: key);
+  const HomePage({Key? key, required this.preslikava}) : super(key: key);
 
-  final String infoPageUrl;
-  final List<Show> showData;
+  final Preslikave preslikava;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -38,18 +37,9 @@ class _HomePageState extends State<HomePage> {
     initializeDateFormatting();
 
     screens = [
-      Home(showData: widget.showData),
-      RadioPlayer(
-          audioData: AudioData(
-              imageUrl:
-                  'https://img.rtvslo.si/_up/upload/2020/04/30/65671496.jpg',
-              title: 'Radio Z',
-              titleDescription: 'this is a radio..',
-              showName: 'Radio Z',
-              showDescription: 'radio',
-              url:
-                  'https://di-br2e5p7r.a.eurovisionflow.net/radiodvr/otp/playlist.m3u8')),
-      Webview(url: widget.infoPageUrl),
+      Home(showData: widget.preslikava.showData),
+      RadioPlayer(radioData: widget.preslikava.radioData),
+      Webview(url: widget.preslikava.infoPageUrl),
     ];
   }
 

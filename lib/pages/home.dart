@@ -18,52 +18,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  /// variables are numbered by row number
-  /*
-  late Future<List<AudioData>> futureAudioData1;
-  late Future<List<AudioData>> futureAudioData2;
-  late Future<List<AudioData>> futureAudioData3;
-  late Future<List<AudioData>> futureAudioData4;
-  late Future<List<AudioData>> futureAudioData5;
-  late Future<List<AudioData>> futureAudioData6;
+  late List<Future<List<AudioData>>> futureAudioData = [];
   int audioDataNumber = 6;
-  */
   int errorCounter = 0;
-
-  List assetData = [
-    {
-      'image': Image.asset('assets/images/Sobane-za-velikane.png'),
-      'color': const Color(0xffed724c)
-    },
-    {
-      'image': Image.asset('assets/images/Ustvarjam.png'),
-      'color': const Color(0xffffa54b)
-    },
-    {
-      'image': Image.asset('assets/images/Najbolj-carobna-potovanja.png'),
-      'color': const Color(0xffed5875)
-    },
-    {
-      'image': Image.asset('assets/images/Igrajmo-se.png'),
-      'color': const Color(0xff39b070)
-    },
-    {
-      'image': Image.asset('assets/images/In-da-cas-hitreje-mine.png'),
-      'color': const Color(0xffe05251)
-    },
-    {
-      'image': Image.asset('assets/images/Za-miren-sen.png'),
-      'color': const Color(0xff7566ac)
-    },
-  ];
 
   @override
   void initState() {
     super.initState();
 
     for (int i = 0; i < widget.showData.length; i++) {
-      assetData[i]['audioList'] =
-          getTrack(context, widget.showData[i], assetData[i]['image']);
+      futureAudioData.add(getTrack(context, widget.showData[i]));
     }
   }
 
@@ -71,16 +35,14 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: GridView(
-          padding: const EdgeInsets.all(20.0),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 30.0),
-          children: [
-            for (var data in assetData)
-              buttonAudioLoader(data['audioList'], data['color'])
-          ],
-        ));
+      backgroundColor: Colors.white,
+      body: GridView(
+        padding: const EdgeInsets.all(20.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 30.0),
+        children: [for (var data in futureAudioData) buttonAudioLoader(data)],
+      ),
+    );
   }
 
   /// builds grid widgets based on future audio data
@@ -91,8 +53,7 @@ class _HomeState extends State<Home> {
   ///
   /// upon all widgets failing to load -> alert dialog is opened notifying user
   /// to check their connection. Leads user back to login screen (pop x2)
-  SizedBox buttonAudioLoader(
-      Future<List<AudioData>> futureAudioData, Color buttonColor) {
+  SizedBox buttonAudioLoader(Future<List<AudioData>> futureAudioData) {
     final height = MediaQuery.of(context).size.height;
     final iconSize = height * 0.14;
 
@@ -103,7 +64,7 @@ class _HomeState extends State<Home> {
         builder: ((context, snapshot) {
           if (snapshot.hasError ||
               (snapshot.hasData && snapshot.data!.isEmpty)) {
-            if (++errorCounter == assetData.length) {
+            if (++errorCounter == audioDataNumber) {
               Future.delayed(
                   Duration.zero, () => noInternetConnectionDialog(context, 2));
               return Center(child: Text('${snapshot.error}'));
@@ -116,21 +77,22 @@ class _HomeState extends State<Home> {
             return Column(children: [
               Container(
                 decoration: BoxDecoration(
-                  color: buttonColor,
+                  color: snapshot.data![0].bgColor,
                   borderRadius: const BorderRadius.all(
                     Radius.circular(20),
                   ),
                 ),
                 child: IconButton(
                   padding: const EdgeInsets.all(15),
-                  icon: snapshot.data![0].image!,
+                  icon: Image.network(snapshot.data![0].imageUrl),
                   iconSize: iconSize,
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => PlaylistPage(
-                            audioDataList: snapshot.data!, color: buttonColor),
+                            audioDataList: snapshot.data!,
+                            color: snapshot.data![0].bgColor!),
                       ),
                     );
                   },
@@ -193,7 +155,7 @@ class _HomeState extends State<Home> {
                   child: Column(
                     children: [
                       IconButton(
-                        icon: snapshot.data![index].image!,
+                        icon: Image.network(snapshot.data![index].imageUrl),
                         iconSize: iconSize,
                         onPressed: () {
                           snapshot.data![index].playAudio(context, color);
