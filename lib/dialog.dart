@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'password_manager.dart';
+import 'audio_data.dart';
 
 /// displays a dialog for a user to check their internet connection
 /// popNo -> amount of windows the dialog should close

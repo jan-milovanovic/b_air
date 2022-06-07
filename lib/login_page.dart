@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dialog.dart';
 
 import 'password_manager.dart';
 

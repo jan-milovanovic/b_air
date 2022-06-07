@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:pediatko/preslikave.dart';
 
 /// Third window of the homepage screen
 /// contains a body with webview custom page
