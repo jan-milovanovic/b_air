@@ -6,15 +6,15 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
 
 import 'audioplay/control_buttons.dart';
-import '../audio_data.dart';
+import 'package:pediatko/radiodata.dart';
 import 'package:pediatko/dialog.dart';
 
 /// radio player contains a single continuous live HLS audio stream
 /// all data for the radio is hand given in the 'home_page.dart' file
 class RadioPlayer extends StatefulWidget {
-  const RadioPlayer({Key? key, required this.audioData}) : super(key: key);
+  const RadioPlayer({Key? key, required this.radioData}) : super(key: key);
 
-  final AudioData audioData;
+  final RadioData radioData;
 
   @override
   _RadioState createState() => _RadioState();
@@ -46,11 +46,12 @@ class _RadioState extends State<RadioPlayer> {
 
       /// HLS stream
       audio = HlsAudioSource(
-        Uri.parse(widget.audioData.url),
+        Uri.parse(widget.radioData.stream),
         tag: MediaItem(
           id: '0',
-          title: widget.audioData.title,
-          artUri: Uri.parse(widget.audioData.imageUrl!),
+          title: widget.radioData.title,
+          displaySubtitle: widget.radioData.subtitle,
+          artUri: Uri.parse(widget.radioData.iconUrl),
         ),
       );
 
@@ -119,7 +120,18 @@ class _RadioState extends State<RadioPlayer> {
                         const SizedBox(height: 10.0),
                         Text(
                           metadata.title,
-                          style: Theme.of(context).textTheme.headline6,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 5.0),
+                        Text(
+                          metadata.displaySubtitle!,
+                          style: const TextStyle(
+                            fontSize: 16,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ],
