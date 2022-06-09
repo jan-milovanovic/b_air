@@ -35,13 +35,18 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: GridView(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      body: Container(
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(20)), color: Colors.white),
+        child: GridView(
+          shrinkWrap: true,
         padding: const EdgeInsets.all(20.0),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 30.0),
+            crossAxisCount: 2, crossAxisSpacing: 0.0, mainAxisSpacing:30.0),
         children: [for (var data in futureAudioData) buttonAudioLoader(data)],
       ),
+    ),
     );
   }
 
@@ -54,8 +59,14 @@ class _HomeState extends State<Home> {
   /// upon all widgets failing to load -> alert dialog is opened notifying user
   /// to check their connection. Leads user back to login screen (pop x2)
   SizedBox buttonAudioLoader(Future<List<AudioData>> futureAudioData) {
+
+    // test dynamic (better UI for tablets)
     final height = MediaQuery.of(context).size.height;
-    final iconSize = height * 0.14;
+    final width = MediaQuery.of(context).size.width;
+    final hw = width * height;
+    final iconSize = hw * 0.00036;
+
+    //final iconSize = height * 0.14;
 
     return SizedBox(
       height: height * 0.5,
@@ -105,7 +116,7 @@ class _HomeState extends State<Home> {
                   snapshot.data![0].showName,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
+                      fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ),
             ]);
@@ -115,6 +126,7 @@ class _HomeState extends State<Home> {
     );
   }
 
+  // deprecated
   Padding paddedText(String text) {
     return Padding(
       padding: const EdgeInsets.only(top: 20, left: 10),
@@ -137,7 +149,6 @@ class _HomeState extends State<Home> {
     final iconSize = height / 6;
 
     return SizedBox(
-      height: height / 4,
       child: FutureBuilder<List<AudioData>>(
         future: futureAudioData,
         builder: ((context, snapshot) {
