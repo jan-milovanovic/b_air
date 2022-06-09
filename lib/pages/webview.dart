@@ -26,10 +26,10 @@ class WebviewState extends State<Webview> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      //padding: EdgeInsets.all(8.0),
-      child: ClipRRect(
-        //borderRadius: BorderRadius.all(Radius.circular(20)),
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      body: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         child: WebView(initialUrl: widget.url),
       ),
     );

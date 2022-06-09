@@ -72,16 +72,20 @@ class _RadioState extends State<RadioPlayer> {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
+    final double hw = height * width;
+    final iconSize = hw * 0.0008;
+
     Color defaultColor = Theme.of(context).colorScheme.primary;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         body: Container(
           alignment: Alignment.center,
           decoration: const BoxDecoration(
-            //color: Colors.white,
+            color: Colors.white,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(20),
             ),
@@ -106,7 +110,7 @@ class _RadioState extends State<RadioPlayer> {
                             borderRadius: BorderRadius.circular(20),
                             child: Image(
                               image: NetworkImage(metadata.artUri.toString()),
-                              height: height / 3,
+                              height: iconSize,
                             ),
                           ),
                         ),
@@ -139,7 +143,10 @@ class _RadioState extends State<RadioPlayer> {
                   },
                 ),
               ),
-              ControlButtons(_player),
+              SizedBox(
+                child: ControlButtons(_player),
+                height: height * 0.2,
+              ),
               const SizedBox(height: 30),
             ],
           ),
