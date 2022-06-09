@@ -102,6 +102,7 @@ class PlaylistPage extends StatelessWidget {
                                       ),
                                     ),
                                   ),
+                                  const SizedBox(width: 20),
                                 ],
                               ),
                               divideBetween(audioDataList.length, index),
