@@ -50,7 +50,7 @@ Future<Preslikave> getTransformation(context) async {
   try {
     final response = await http
         .get(Uri.parse(
-            'https://api.rtvslo.si/preslikave/bair?client_id=${secret.storyClientId}&_=1654497862648'))
+            'https://api.rtvslo.si/preslikave/bair?client_id=${secret.clientId}&_=1654497862648'))
         .timeout(const Duration(seconds: 10));
 
     if (response.statusCode == 200) {

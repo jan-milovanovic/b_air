@@ -63,8 +63,8 @@ Future<List<AudioData>> getTrack(context, Show showData) async {
   try {
     final response = await http
         .get(Uri.parse(
-            'https://api.rtvslo.si/ava/getSearch2?client_id=${secret.storyClientId}&pageNumber=0&pageSize=12&sort=date&order=desc&showId=${showData.showId}'))
-        .timeout(const Duration(seconds: 10));
+            'https://api.rtvslo.si/ava/getSearch2?client_id=${secret.clientId}&pageNumber=0&pageSize=12&sort=date&order=desc&showId=${showData.showId}'))
+        .timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final int recNumber = getNumberOfRecordings(jsonDecode(response.body));
