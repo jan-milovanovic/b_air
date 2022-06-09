@@ -138,6 +138,10 @@ class _RecordingState extends State<RecordingPlayer> {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.height;
+    final hw = height * width;
+    final iconSize = hw * 0.00020;
+    //final iconSize = height * 0.169;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -192,7 +196,7 @@ class _RecordingState extends State<RecordingPlayer> {
                                   ),
                                   child:
                                       Image.network(metadata.artUri.toString()),
-                                  height: height * 0.169,
+                                  height: iconSize,
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
