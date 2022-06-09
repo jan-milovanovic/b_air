@@ -27,7 +27,6 @@ class _HomePageState extends State<HomePage> {
   late final List<Widget> screens;
 
   int currentIndex = 0;
-  final PageController _pageController = PageController(initialPage: 0);
 
   @override
   void initState() {
@@ -44,7 +43,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
-    _pageController.dispose();
   }
 
   @override
@@ -66,11 +64,7 @@ class _HomePageState extends State<HomePage> {
           centerTitle: true,
           backgroundColor: defaultColor,
           elevation: 0,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(20),
-            ),
-          ),
+
           leadingWidth: 70,
           leading: IconButton(
             icon: const Icon(Icons.logout_rounded),
@@ -86,15 +80,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         backgroundColor: Colors.white,
-        body: PageView(
-          controller: _pageController,
-          onPageChanged: (newIndex) {
-            setState(() {
-              currentIndex = newIndex;
-            });
-          },
-          children: screens,
-        ),
+        body: screens[currentIndex],
         bottomNavigationBar: Container(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.vertical(
@@ -113,19 +99,15 @@ class _HomePageState extends State<HomePage> {
             ),
             child: BottomNavigationBar(
               currentIndex: currentIndex,
-              onTap: (index) {
-                _pageController.animateToPage(index,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.ease);
-              },
+              onTap: (index) => setState(() => currentIndex = index),
               showSelectedLabels: false,
               showUnselectedLabels: false,
               elevation: 0,
               //iconSize: 30,
-              items: const [
-                BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-                BottomNavigationBarItem(icon: Icon(Icons.radio), label: ''),
-                BottomNavigationBarItem(icon: Icon(Icons.info), label: ''),
+              items: [
+                BottomNavigationBarItem(icon: Image.asset('assets/icons/Home.png', width: 40,), activeIcon: Image.asset('assets/icons/Home-active.png', width: 40,), label: ''),
+                BottomNavigationBarItem(icon: Image.asset('assets/icons/V-zivo.png', width: 40,), activeIcon: Image.asset('assets/icons/V-zivo-active.png', width: 40,), label: ''),
+                BottomNavigationBarItem(icon: Image.asset('assets/icons/Info.png', width: 40,), activeIcon: Image.asset('assets/icons/Info-active.png', width: 40,), label: ''),
               ],
             ),
           ),
