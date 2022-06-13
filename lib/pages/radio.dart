@@ -94,54 +94,58 @@ class _RadioState extends State<RadioPlayer> {
             children: [
               Expanded(
                 child: StreamBuilder<SequenceState?>(
-                  stream: _player.sequenceStateStream,
-                  builder: (context, snapshot) {
-                    final state = snapshot.data;
-                    if (state?.sequence.isEmpty ?? true) {
-                      return const SizedBox();
-                    }
-                    final metadata = state!.currentSource!.tag as MediaItem;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(32.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Image(
-                              image: NetworkImage(metadata.artUri.toString()),
-                              height: iconSize,
+                    stream: _player.sequenceStateStream,
+                    builder: (context, snapshot) {
+                      final state = snapshot.data;
+                      if (state?.sequence.isEmpty ?? true) {
+                        return const SizedBox();
+                      }
+                      if (!snapshot.hasData) {
+                        return loadingIndicator();
+                      } else if (snapshot.hasError) {
+                        throw Exception('Radio data did not load');
+                      } else {
+                        final metadata = state!.currentSource!.tag as MediaItem;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(32.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: loadImageOrFiller(
+                                    metadata.artUri, iconSize),
+                              ),
                             ),
-                          ),
-                        ),
-                        Text(
-                          "V ŽIVO",
-                          style: TextStyle(
-                            color: defaultColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 10.0),
-                        Text(
-                          metadata.title,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 5.0),
-                        Text(
-                          metadata.displaySubtitle!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                            Text(
+                              "V ŽIVO",
+                              style: TextStyle(
+                                color: defaultColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 10.0),
+                            Text(
+                              metadata.title,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 5.0),
+                            Text(
+                              metadata.displaySubtitle!,
+                              style: const TextStyle(
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        );
+                      }
+                    }),
               ),
               SizedBox(
                 child: ControlButtons(_player),
@@ -153,5 +157,21 @@ class _RadioState extends State<RadioPlayer> {
         ),
       ),
     );
+  }
+
+  loadImageOrFiller(Uri? artUri, double iconSize) {
+    return artUri!.path == ""
+        ? Container(
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: Colors.black26),
+            height: iconSize,
+            width: iconSize,
+            child: const Center(child: Text('Load error')),
+          )
+        : Image(
+            image: NetworkImage(artUri.toString()),
+            height: iconSize,
+          );
   }
 }
