@@ -64,12 +64,17 @@ class _HomePageState extends State<HomePage> {
           centerTitle: true,
           backgroundColor: defaultColor,
           elevation: 0,
-
           leadingWidth: 70,
           leading: IconButton(
-            icon: const Icon(Icons.logout_rounded),
-            color: Colors.white,
-            iconSize: 30,
+            icon: Image.asset(
+              'assets/icons/ico-Logout.png',
+              height: 25,
+            ),
+            /*
+            icon: const Icon(
+              Icons.logout_outlined,
+              size: 30,
+            ),*/
             //padding: const EdgeInsets.only(left: 15),
             onPressed: () => showDialog(
               context: context,
@@ -105,9 +110,36 @@ class _HomePageState extends State<HomePage> {
               elevation: 0,
               //iconSize: 30,
               items: [
-                BottomNavigationBarItem(icon: Image.asset('assets/icons/Home.png', width: 40,), activeIcon: Image.asset('assets/icons/Home-active.png', width: 40,), label: ''),
-                BottomNavigationBarItem(icon: Image.asset('assets/icons/V-zivo.png', width: 40,), activeIcon: Image.asset('assets/icons/V-zivo-active.png', width: 40,), label: ''),
-                BottomNavigationBarItem(icon: Image.asset('assets/icons/Info.png', width: 40,), activeIcon: Image.asset('assets/icons/Info-active.png', width: 40,), label: ''),
+                BottomNavigationBarItem(
+                    icon: Image.asset(
+                      'assets/icons/Home.png',
+                      width: 40,
+                    ),
+                    activeIcon: Image.asset(
+                      'assets/icons/Home-active.png',
+                      width: 40,
+                    ),
+                    label: ''),
+                BottomNavigationBarItem(
+                    icon: Image.asset(
+                      'assets/icons/V-zivo.png',
+                      width: 40,
+                    ),
+                    activeIcon: Image.asset(
+                      'assets/icons/V-zivo-active.png',
+                      width: 40,
+                    ),
+                    label: ''),
+                BottomNavigationBarItem(
+                    icon: Image.asset(
+                      'assets/icons/Info.png',
+                      width: 40,
+                    ),
+                    activeIcon: Image.asset(
+                      'assets/icons/Info-active.png',
+                      width: 40,
+                    ),
+                    label: ''),
               ],
             ),
           ),
