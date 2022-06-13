@@ -38,15 +38,17 @@ class _HomeState extends State<Home> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: Container(
         alignment: Alignment.center,
-        decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(20)), color: Colors.white),
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            color: Colors.white),
         child: GridView(
           shrinkWrap: true,
-        padding: const EdgeInsets.all(20.0),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, crossAxisSpacing: 0.0, mainAxisSpacing:30.0),
-        children: [for (var data in futureAudioData) buttonAudioLoader(data)],
+          padding: const EdgeInsets.all(20.0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, crossAxisSpacing: 0.0, mainAxisSpacing: 30.0),
+          children: [for (var data in futureAudioData) buttonAudioLoader(data)],
+        ),
       ),
-    ),
     );
   }
 
@@ -59,7 +61,6 @@ class _HomeState extends State<Home> {
   /// upon all widgets failing to load -> alert dialog is opened notifying user
   /// to check their connection. Leads user back to login screen (pop x2)
   SizedBox buttonAudioLoader(Future<List<AudioData>> futureAudioData) {
-
     // test dynamic (better UI for tablets)
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
@@ -78,9 +79,11 @@ class _HomeState extends State<Home> {
             if (++errorCounter == audioDataNumber) {
               Future.delayed(
                   Duration.zero, () => noInternetConnectionDialog(context, 2));
-              return Center(child: Text('${snapshot.error}'));
+              return notLoaded();
+              //return Center(child: Text('${snapshot.error}'));
             } else {
-              return Center(child: Text('${snapshot.error}'));
+              return notLoaded();
+              //return Center(child: Text('${snapshot.error}'));
             }
           } else if (!snapshot.hasData) {
             return loadingIndicator();
@@ -126,7 +129,24 @@ class _HomeState extends State<Home> {
     );
   }
 
-  // deprecated
+  Container notLoaded() {
+    return Container(
+      margin: const EdgeInsets.all(10.0),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+        //alignment: Alignment.center,
+        color: Colors.black26,
+      ),
+      child: const Center(
+        child: Text(
+          'Load error',
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  @Deprecated("not in use anymore, deleted soon")
   Padding paddedText(String text) {
     return Padding(
       padding: const EdgeInsets.only(top: 20, left: 10),
@@ -137,12 +157,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Container loadingIndicator() {
-    return Container(
-        alignment: Alignment.center, child: const CircularProgressIndicator());
-  }
-
-  @Deprecated("""function is replaced in favor of [buttonAudioLoader], due to
+  @Deprecated(
+      """function is replaced in favor of [buttonAudioLoader], due to
   changes in design and will be removed in the future""")
   SizedBox audioLoader(Future<List<AudioData>> futureAudioData, Color color) {
     final height = MediaQuery.of(context).size.height;
