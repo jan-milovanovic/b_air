@@ -19,7 +19,7 @@ noInternetConnectionDialog(context, int popNo) {
       context: context,
       builder: (BuildContext context) {
         return WillPopScope(
-          onWillPop: () async => true,
+          onWillPop: () async => false,
           child: AlertDialog(
             title: const Text(
               'Preverite internetno povezavo',
