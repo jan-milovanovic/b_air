@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'password_manager.dart';
 
@@ -90,6 +91,9 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
     _checkmarkController = AnimationController(
         duration: const Duration(milliseconds: 500), vsync: this);
+
+    Future.delayed(const Duration(seconds: 1))
+        .then((value) => FlutterNativeSplash.remove());
   }
 
   @override
