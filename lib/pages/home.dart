@@ -67,7 +67,7 @@ class _HomeState extends State<Home> {
     final hw = width * height;
     final iconSize = hw * 0.00036;
 
-    //final iconSize = height * 0.14;
+    GlobalKey _key = GlobalKey();
 
     return SizedBox(
       height: height * 0.5,
@@ -97,19 +97,12 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 child: IconButton(
+                  key: _key,
                   padding: const EdgeInsets.all(15),
                   icon: Image.network(snapshot.data![0].imageUrl),
                   iconSize: iconSize,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PlaylistPage(
-                            audioDataList: snapshot.data!,
-                            color: snapshot.data![0].bgColor!),
-                      ),
-                    );
-                  },
+                  onPressed: () => pageRouteAnimation(
+                      context, snapshot.data!, _key, height, width),
                 ),
               ),
               const SizedBox(height: 8),
@@ -125,6 +118,42 @@ class _HomeState extends State<Home> {
             ]);
           }
         }),
+      ),
+    );
+  }
+
+  pageRouteAnimation(context, snapshot, key, height, width) {
+    RenderBox? box = key.currentContext?.findRenderObject() as RenderBox?;
+    Offset? position = box?.localToGlobal(Offset.zero);
+    double x = 0.0;
+    double y = 0.0;
+
+    /// half of icon size
+    /// this will be used to center position alignment
+    final double size = height * width * 0.00036 * 0.5;
+
+    /// normalize min max from -1 to 1
+    /// position starts at top left corner, add size to center
+    if (position != null) {
+      x = (((position.dx + size) / width) * 2) - 1;
+      y = (((position.dy + size) / height) * 2) - 1;
+    }
+
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return PlaylistPage(audioDataList: snapshot);
+        },
+        transitionDuration: const Duration(milliseconds: 300),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          animation =
+              CurvedAnimation(parent: animation, curve: Curves.easeOutExpo);
+          return ScaleTransition(
+            alignment: Alignment(x, y),
+            scale: animation,
+            child: child,
+          );
+        },
       ),
     );
   }
@@ -157,8 +186,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  @Deprecated(
-      """function is replaced in favor of [buttonAudioLoader], due to
+  @Deprecated("""function is replaced in favor of [buttonAudioLoader], due to
   changes in design and will be removed in the future""")
   SizedBox audioLoader(Future<List<AudioData>> futureAudioData, Color color) {
     final height = MediaQuery.of(context).size.height;
