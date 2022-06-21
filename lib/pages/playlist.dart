@@ -6,18 +6,16 @@ import 'package:pediatko/audio_data.dart';
 /// half of mobile screen should display all avail. audio in a scrollable form
 /// specific recording texts text may also be scrolled horizontally (length)
 class PlaylistPage extends StatelessWidget {
-  const PlaylistPage(
-      {Key? key, required this.audioDataList, required this.color})
-      : super(key: key);
+  const PlaylistPage({Key? key, required this.audioDataList}) : super(key: key);
 
   final List<AudioData> audioDataList;
-  final Color color;
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
+    final Color color = audioDataList[0].bgColor!;
     final Color defaultColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
