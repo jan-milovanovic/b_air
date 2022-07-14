@@ -83,7 +83,16 @@ class _RecordingState extends State<RecordingPlayer> {
       if (mp3['hls_sec'] != null) {
         mp3 = mp3['hls_sec'];
 
-        audio = HlsAudioSource(Uri.parse(mp3));
+        audio = HlsAudioSource(
+          Uri.parse(mp3),
+          tag: MediaItem(
+            id: '0',
+            album: widget.audioData.showName,
+            title: widget.audioData.title,
+            displayDescription: widget.audioData.titleDescription,
+            artUri: Uri.parse(widget.audioData.imageUrl),
+          ),
+        );
       } else {
         if (mp3['https'] != null) {
           mp3 = mp3['https'];
@@ -93,7 +102,16 @@ class _RecordingState extends State<RecordingPlayer> {
           mp3 = mp3['mpeg-dash'];
         }
 
-        audio = ProgressiveAudioSource(Uri.parse(mp3));
+        audio = ProgressiveAudioSource(
+          Uri.parse(mp3),
+          tag: MediaItem(
+            id: '0',
+            album: widget.audioData.showName,
+            title: widget.audioData.title,
+            displayDescription: widget.audioData.titleDescription,
+            artUri: Uri.parse(widget.audioData.imageUrl),
+          ),
+        );
       }
 
       await _player.setAudioSource(audio);
