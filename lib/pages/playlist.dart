@@ -15,7 +15,7 @@ class PlaylistPage extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    final Color color = audioDataList[0].bgColor!;
+    final Color color = audioDataList[0].bgColor;
     final Color defaultColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
@@ -32,7 +32,12 @@ class PlaylistPage extends StatelessWidget {
             const Spacer(flex: 1),
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(audioDataList[0].imageUrl, width: width / 3),
+              child: Hero(
+                tag: 'imageUrl',
+                child:
+                    Image.network(audioDataList[0].imageUrl, width: width / 3),
+                transitionOnUserGestures: true,
+              ),
             ),
             const SizedBox(height: 10),
             Text(
@@ -80,7 +85,10 @@ class PlaylistPage extends StatelessWidget {
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
-                              audioDataList[index].playAudio(context, color);
+                              audioDataList[index].playAudio(
+                                context,
+                                audioDataList,
+                              );
                             },
                             child: Column(
                               children: [
