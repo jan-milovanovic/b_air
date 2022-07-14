@@ -23,28 +23,40 @@ class AudioData {
   final String showName;
   final String showDescription;
   final String url;
+  final Color bgColor;
+  final int? previous;
+  final int current;
+  final int? next;
   final String? id;
-  final Color? bgColor;
 
-  AudioData(
-      {required this.title,
-      required this.imageUrl,
-      required this.titleDescription,
-      required this.showName,
-      required this.showDescription,
-      required this.url,
-      this.id,
-      this.bgColor});
+  AudioData({
+    required this.title,
+    required this.imageUrl,
+    required this.titleDescription,
+    required this.showName,
+    required this.showDescription,
+    required this.url,
+    required this.bgColor,
+    this.previous,
+    required this.current,
+    this.next,
+    this.id,
+  });
 
-  void playAudio(BuildContext context, Color color) {
+  void playAudio(BuildContext context, [List<AudioData>? audioDataList]) {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                RecordingPlayer(audioData: this, color: color)));
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecordingPlayer(
+          audioData: this,
+          audioDataList: audioDataList,
+        ),
+      ),
+    );
   }
 
-  factory AudioData.fromJson(Map<String, dynamic> json, int i, Show showData) {
+  factory AudioData.fromJson(
+      Map<String, dynamic> json, int i, int recNumber, Show showData) {
     return AudioData(
       imageUrl: showData.iconUrl,
       title: json['response']['recordings'][i]['title'],
@@ -55,6 +67,9 @@ class AudioData {
       id: json['response']['recordings'][i]['id'],
       bgColor:
           Color(int.parse(showData.bgColor.replaceFirst('#', 'ff'), radix: 16)),
+      previous: i - 1 < 0 ? null : i - 1,
+      current: i,
+      next: i + 1 > recNumber ? null : i + 1,
     );
   }
 }
@@ -72,8 +87,8 @@ Future<List<AudioData>> getTrack(context, Show showData) async {
       List<AudioData> audioData = [];
 
       for (int i = 0; i < recNumber; i++) {
-        audioData
-            .add(AudioData.fromJson(jsonDecode(response.body), i, showData));
+        audioData.add(AudioData.fromJson(
+            jsonDecode(response.body), i, recNumber - 1, showData));
       }
 
       return audioData;
