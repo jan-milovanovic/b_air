@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -20,12 +22,11 @@ import 'package:pediatko/dialog.dart';
 /// Do not remove 'hls' and 'hls_sec'
 /// some files, although not live, are given in those formats
 class RecordingPlayer extends StatefulWidget {
-  const RecordingPlayer(
-      {Key? key, required this.audioData, required this.color})
+  const RecordingPlayer({Key? key, required this.audioData, this.audioDataList})
       : super(key: key);
 
   final AudioData audioData;
-  final Color color;
+  final List<AudioData>? audioDataList;
 
   @override
   _RecordingState createState() => _RecordingState();
@@ -82,16 +83,7 @@ class _RecordingState extends State<RecordingPlayer> {
       if (mp3['hls_sec'] != null) {
         mp3 = mp3['hls_sec'];
 
-        audio = HlsAudioSource(
-          Uri.parse(mp3),
-          tag: MediaItem(
-            id: '0',
-            album: widget.audioData.showName,
-            title: widget.audioData.title,
-            displayDescription: widget.audioData.titleDescription,
-            artUri: Uri.parse(widget.audioData.imageUrl),
-          ),
-        );
+        audio = HlsAudioSource(Uri.parse(mp3));
       } else {
         if (mp3['https'] != null) {
           mp3 = mp3['https'];
@@ -101,22 +93,14 @@ class _RecordingState extends State<RecordingPlayer> {
           mp3 = mp3['mpeg-dash'];
         }
 
-        audio = ProgressiveAudioSource(
-          Uri.parse(mp3),
-          tag: MediaItem(
-            id: '0',
-            album: widget.audioData.showName,
-            title: widget.audioData.title,
-            displayDescription: widget.audioData.titleDescription,
-            artUri: Uri.parse(widget.audioData.imageUrl),
-          ),
-        );
+        audio = ProgressiveAudioSource(Uri.parse(mp3));
       }
 
       await _player.setAudioSource(audio);
       _player.play();
-    } catch (e) {
+    } on TimeoutException {
       noInternetConnectionDialog(context, 2);
+    } catch (e) {
       throw Exception('$e');
     }
   }
@@ -146,11 +130,11 @@ class _RecordingState extends State<RecordingPlayer> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: widget.color,
+        backgroundColor: widget.audioData.bgColor,
         appBar: AppBar(
           title: Image.asset('assets/pediatko-logo.png', height: 25),
           centerTitle: true,
-          backgroundColor: widget.color,
+          backgroundColor: widget.audioData.bgColor,
           elevation: 0,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
@@ -173,68 +157,64 @@ class _RecordingState extends State<RecordingPlayer> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: StreamBuilder<SequenceState?>(
-                    stream: _player.sequenceStateStream,
-                    builder: (context, snapshot) {
-                      final state = snapshot.data;
-                      if (state?.sequence.isEmpty ?? true) {
-                        return const SizedBox();
-                      }
-                      final metadata = state!.currentSource!.tag as MediaItem;
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: widget.color,
-                                  ),
-                                  child:
-                                      Image.network(metadata.artUri.toString()),
-                                  height: iconSize,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: widget.audioData.bgColor,
+                              ),
+                              child: Hero(
+                                tag: 'imageUrl',
+                                child: Image.network(
+                                  widget.audioData.imageUrl,
                                 ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  metadata.album!,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: widget.color),
-                                ),
-                                const SizedBox(height: 10),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Text(
-                                    metadata.title,
-                                    style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                SizedBox(
-                                  height: height * 0.25,
-                                  child: SingleChildScrollView(
-                                    child: Text(metadata.displayDescription!),
-                                  ),
-                                ),
-                              ],
+                                transitionOnUserGestures: true,
+                              ),
+                              height: iconSize,
                             ),
-                          ),
-                        ],
-                      );
-                    },
+                            const SizedBox(height: 10),
+                            Text(
+                              widget.audioData.showName,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: widget.audioData.bgColor),
+                            ),
+                            const SizedBox(height: 10),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Text(
+                                widget.audioData.title,
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              height: height * 0.25,
+                              child: SingleChildScrollView(
+                                child: Text(widget.audioData.titleDescription),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Center(
                   child: SizedBox(
                     height: height * 0.18,
-                    child: ControlButtons(_player),
+                    child: ControlButtons(_player,
+                        audioDataList: widget.audioDataList,
+                        index: widget.audioData.current),
                   ),
                 ),
 
