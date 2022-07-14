@@ -24,8 +24,13 @@ class _ControlButtonsState extends State<ControlButtons> {
 
   @override
   Widget build(BuildContext context) {
-    int? audioPrevious = widget.audioDataList![widget.index!].previous;
-    int? audioNext = widget.audioDataList![widget.index!].next;
+    int? audioPrevious;
+    int? audioNext;
+
+    if (widget.index != null) {
+      audioPrevious = widget.audioDataList![widget.index!].previous;
+      audioNext = widget.audioDataList![widget.index!].next;
+    }
 
     return Row(
       mainAxisSize: MainAxisSize.min,
