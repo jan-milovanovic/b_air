@@ -5,7 +5,6 @@ import 'package:pediatko/auth/secrets.dart' as secret;
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import './pages/recording_player.dart';
 
 import 'show.dart';
 
@@ -42,18 +41,6 @@ class AudioData {
     this.next,
     this.id,
   });
-
-  void playAudio(BuildContext context, [List<AudioData>? audioDataList]) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RecordingPlayer(
-          audioData: this,
-          audioDataList: audioDataList,
-        ),
-      ),
-    );
-  }
 
   factory AudioData.fromJson(
       Map<String, dynamic> json, int i, int recNumber, Show showData) {

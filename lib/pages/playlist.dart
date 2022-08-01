@@ -1,22 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:pediatko/audio_data.dart';
+import 'package:pediatko/dialog.dart';
+import 'package:pediatko/pages/audioplay/playlist_manager.dart';
+import 'package:pediatko/pages/recording_player.dart';
 
 /// playlist page displays data for a single recording album
 /// text description is scrollable with a FIXED height
 /// half of mobile screen should display all avail. audio in a scrollable form
 /// specific recording texts text may also be scrolled horizontally (length)
-class PlaylistPage extends StatelessWidget {
+class PlaylistPage extends StatefulWidget {
   const PlaylistPage({Key? key, required this.audioDataList}) : super(key: key);
 
   final List<AudioData> audioDataList;
+
+  @override
+  State<StatefulWidget> createState() => _PlaylistPageState();
+}
+
+class _PlaylistPageState extends State<PlaylistPage> {
+  late Future<PlaylistManager> playlist;
+
+  @override
+  void initState() {
+    super.initState();
+
+    playlist = PlaylistManager().create(widget.audioDataList);
+  }
+
+  /// function removes the last index divider which would appear at the bottom
+  /// of the screen and is not wanted in the UI
+  divideBetween(int listLength, int index) {
+    return listLength > (index + 1)
+        ? const Divider(
+            color: Color.fromARGB(30, 0, 0, 0),
+            indent: 20,
+            endIndent: 20,
+            thickness: 3,
+          )
+        : const SizedBox(height: 5);
+  }
+
+  loadRecordings(PlaylistManager pm) {
+    final Color defaultColor = Theme.of(context).colorScheme.primary;
+
+    return ListView.builder(
+        itemCount: widget.audioDataList.length,
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => RecordingPlayer(
+                    playlist: pm.getPlaylist(),
+                    audioDataList: widget.audioDataList,
+                    index: index,
+                  ),
+                ),
+              );
+            },
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    const SizedBox(height: 50, width: 20),
+                    Icon(Icons.play_circle_fill_rounded,
+                        size: 40, color: defaultColor),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.only(right: 20),
+                        scrollDirection: Axis.horizontal,
+                        child: Text(
+                          widget.audioDataList[index].title,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                  ],
+                ),
+                divideBetween(widget.audioDataList.length, index),
+              ],
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    final Color color = audioDataList[0].bgColor;
-    final Color defaultColor = Theme.of(context).colorScheme.primary;
+    final Color color = widget.audioDataList[0].bgColor;
 
     return Scaffold(
         appBar: AppBar(
@@ -34,14 +113,14 @@ class PlaylistPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               child: Hero(
                 tag: 'imageUrl',
-                child:
-                    Image.network(audioDataList[0].imageUrl, width: width / 3),
+                child: Image.network(widget.audioDataList[0].imageUrl,
+                    width: width / 3),
                 transitionOnUserGestures: true,
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              audioDataList[0].showName,
+              widget.audioDataList[0].showName,
               style: const TextStyle(
                   fontSize: 25,
                   color: Colors.white,
@@ -54,7 +133,7 @@ class PlaylistPage extends StatelessWidget {
               width: width - 50,
               child: SingleChildScrollView(
                 child: Text(
-                  audioDataList[0].showDescription,
+                  widget.audioDataList[0].showDescription,
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.white),
                 ),
@@ -78,46 +157,15 @@ class PlaylistPage extends StatelessWidget {
                   height: height / 2,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5),
-                    child: ListView.builder(
-                        itemCount: audioDataList.length,
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            onTap: () {
-                              audioDataList[index].playAudio(
-                                context,
-                                audioDataList,
-                              );
-                            },
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    const SizedBox(height: 50, width: 20),
-                                    Icon(Icons.play_circle_fill_rounded,
-                                        size: 40, color: defaultColor),
-                                    const SizedBox(width: 20),
-                                    Expanded(
-                                      child: SingleChildScrollView(
-                                        padding:
-                                            const EdgeInsets.only(right: 20),
-                                        scrollDirection: Axis.horizontal,
-                                        child: Text(
-                                          audioDataList[index].title,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 20),
-                                  ],
-                                ),
-                                divideBetween(audioDataList.length, index),
-                              ],
-                            ),
-                          );
+                    child: FutureBuilder<PlaylistManager>(
+                        future: playlist,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return loadRecordings(snapshot.data!);
+                          } else {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
                         }),
                   ),
                 ),
@@ -125,18 +173,5 @@ class PlaylistPage extends StatelessWidget {
             ),
           ],
         ));
-  }
-
-  /// function removes the last index divider which would appear at the bottom
-  /// of the screen and is not wanted in the UI
-  divideBetween(int listLength, int index) {
-    return listLength > (index + 1)
-        ? const Divider(
-            color: Color.fromARGB(30, 0, 0, 0),
-            indent: 20,
-            endIndent: 20,
-            thickness: 3,
-          )
-        : const SizedBox(height: 5);
   }
 }

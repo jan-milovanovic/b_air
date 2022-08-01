@@ -1,60 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:pediatko/audio_data.dart';
-import 'package:pediatko/pages/recording_player.dart';
 
-class ControlButtons extends StatefulWidget {
+class ControlButtons extends StatelessWidget {
   final AudioPlayer player;
-  final List<AudioData>? audioDataList;
-  final int? index;
 
-  const ControlButtons(this.player, {Key? key, this.audioDataList, this.index})
-      : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _ControlButtonsState();
-}
-
-class _ControlButtonsState extends State<ControlButtons> {
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
+  const ControlButtons(this.player, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    int? audioPrevious;
-    int? audioNext;
-
-    if (widget.index != null) {
-      audioPrevious = widget.audioDataList![widget.index!].previous;
-      audioNext = widget.audioDataList![widget.index!].next;
-    }
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.index != null)
-          StreamBuilder<SequenceState?>(
-            stream: widget.player.sequenceStateStream,
-            builder: (context, snapshot) => IconButton(
-              icon: const Icon(Icons.skip_previous),
-              color: audioPrevious != null
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.black38,
-              iconSize: 64.0,
-              onPressed: () {
-                if (audioPrevious != null) {
-                  widget.player.dispose();
-                  widget.audioDataList![widget.index! - 1]
-                      .playAudio(context, widget.audioDataList);
-                }
-              },
-            ),
+        StreamBuilder<SequenceState?>(
+          stream: player.sequenceStateStream,
+          builder: (context, snapshot) => IconButton(
+            icon: const Icon(Icons.skip_previous),
+            color: Theme.of(context).colorScheme.primary,
+            iconSize: 64.0,
+            onPressed: player.hasPrevious ? player.seekToPrevious : null,
           ),
+        ),
         StreamBuilder<PlayerState>(
-          stream: widget.player.playerStateStream,
+          stream: player.playerStateStream,
           builder: (context, snapshot) {
             final playerState = snapshot.data;
             final processingState = playerState?.processingState;
@@ -72,44 +39,35 @@ class _ControlButtonsState extends State<ControlButtons> {
                 icon: const Icon(Icons.play_circle_fill_rounded),
                 color: Theme.of(context).colorScheme.primary,
                 iconSize: 128.0,
-                onPressed: widget.player.play,
+                onPressed: player.play,
               );
             } else if (processingState != ProcessingState.completed) {
               return IconButton(
                 icon: const Icon(Icons.pause_circle_filled_rounded),
                 color: Theme.of(context).colorScheme.primary,
                 iconSize: 128.0,
-                onPressed: widget.player.pause,
+                onPressed: player.pause,
               );
             } else {
               return IconButton(
                 icon: const Icon(Icons.replay_circle_filled_rounded),
                 color: Theme.of(context).colorScheme.primary,
                 iconSize: 128.0,
-                onPressed: () => widget.player.seek(Duration.zero,
-                    index: widget.player.effectiveIndices!.first),
+                onPressed: () => player.seek(Duration.zero,
+                    index: player.effectiveIndices!.first),
               );
             }
           },
         ),
-        if (widget.index != null)
-          StreamBuilder<SequenceState?>(
-            stream: widget.player.sequenceStateStream,
-            builder: (context, snapshot) => IconButton(
-              icon: const Icon(Icons.skip_next),
-              color: audioNext != null
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.black38,
-              iconSize: 64.0,
-              onPressed: () {
-                if (widget.audioDataList![widget.index!].next != null) {
-                  widget.player.dispose();
-                  widget.audioDataList![widget.index! + 1]
-                      .playAudio(context, widget.audioDataList);
-                }
-              },
-            ),
+        StreamBuilder<SequenceState?>(
+          stream: player.sequenceStateStream,
+          builder: (context, snapshot) => IconButton(
+            icon: const Icon(Icons.skip_next),
+            color: Theme.of(context).colorScheme.primary,
+            iconSize: 64.0,
+            onPressed: player.hasNext ? player.seekToNext : null,
           ),
+        ),
       ],
     );
   }

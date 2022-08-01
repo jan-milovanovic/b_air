@@ -2,18 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
-
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'audioplay/player_seekbar.dart';
 import 'audioplay/control_buttons.dart';
 import '../audio_data.dart';
-import '../auth/secrets.dart' as secret;
-import 'package:pediatko/dialog.dart';
 
 /// This is a player specifically for recordings
 /// It has a different UI compared to the radio player
@@ -22,11 +16,16 @@ import 'package:pediatko/dialog.dart';
 /// Do not remove 'hls' and 'hls_sec'
 /// some files, although not live, are given in those formats
 class RecordingPlayer extends StatefulWidget {
-  const RecordingPlayer({Key? key, required this.audioData, this.audioDataList})
-      : super(key: key);
+  const RecordingPlayer({
+    Key? key,
+    required this.playlist,
+    required this.audioDataList,
+    required this.index,
+  }) : super(key: key);
 
-  final AudioData audioData;
-  final List<AudioData>? audioDataList;
+  final ConcatenatingAudioSource playlist;
+  final int index;
+  final List<AudioData> audioDataList;
 
   @override
   _RecordingState createState() => _RecordingState();
@@ -34,6 +33,7 @@ class RecordingPlayer extends StatefulWidget {
 
 class _RecordingState extends State<RecordingPlayer> {
   late AudioPlayer _player;
+  int? playerOffset;
 
   @override
   void initState() {
@@ -53,73 +53,17 @@ class _RecordingState extends State<RecordingPlayer> {
         onError: (Object e, StackTrace stackTrace) {
       //print('A stream error occurred: $e');
     });
+
+    _player.currentIndexStream.listen((event) {
+      setState(() => playerOffset = event ?? widget.index);
+    });
+
     try {
-      final AudioSource audio;
-
-      // fetch jwt key
-      final responseJWT = await http.get(Uri.parse(
-          'https://api.rtvslo.si/ava/getRecordingDrm/${widget.audioData.id}?client_id=${secret.clientId}'));
-
-      if (responseJWT.statusCode != 200) {
-        throw Exception(
-            'Failed to load website for title: ${widget.audioData.title}, link: ${widget.audioData.url}');
-      }
-
-      final String jwt = json.decode(responseJWT.body)['response']['jwt'];
-
-      // fetch mp3 file
-      final responseMP3 = await http.get(Uri.parse(
-          'https://api.rtvslo.si/ava/getMedia/${widget.audioData.id}?client_id=${secret.clientId}&jwt=$jwt'));
-
-      if (responseMP3.statusCode != 200) {
-        throw Exception(
-            'Failed to load website for title: ${widget.audioData.title}, link: ${widget.audioData.url}');
-      }
-
-      var mp3 = json.decode(responseMP3.body);
-      mp3 = mp3['response']['mediaFiles'][0]['streams'];
-
-      // some recordings are in saved in hls, do not remove this!
-      if (mp3['hls_sec'] != null) {
-        mp3 = mp3['hls_sec'];
-
-        audio = HlsAudioSource(
-          Uri.parse(mp3),
-          tag: MediaItem(
-            id: '0',
-            album: widget.audioData.showName,
-            title: widget.audioData.title,
-            displayDescription: widget.audioData.titleDescription,
-            artUri: Uri.parse(widget.audioData.imageUrl),
-          ),
-        );
-      } else {
-        if (mp3['https'] != null) {
-          mp3 = mp3['https'];
-        } else if (mp3['http'] != null) {
-          mp3 = mp3['http'];
-        } else {
-          mp3 = mp3['mpeg-dash'];
-        }
-
-        audio = ProgressiveAudioSource(
-          Uri.parse(mp3),
-          tag: MediaItem(
-            id: '0',
-            album: widget.audioData.showName,
-            title: widget.audioData.title,
-            displayDescription: widget.audioData.titleDescription,
-            artUri: Uri.parse(widget.audioData.imageUrl),
-          ),
-        );
-      }
-
-      await _player.setAudioSource(audio);
+      await _player.setAudioSource(widget.playlist, initialIndex: widget.index);
       _player.play();
-    } on TimeoutException {
-      noInternetConnectionDialog(context, 2);
     } catch (e) {
-      throw Exception('$e');
+      // Catch load errors: 404, invalid url ...
+      print("Error loading playlist: $e");
     }
   }
 
@@ -145,14 +89,16 @@ class _RecordingState extends State<RecordingPlayer> {
     final iconSize = hw * 0.00020;
     //final iconSize = height * 0.169;
 
+    AudioData audioData = widget.audioDataList[playerOffset ?? widget.index];
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: widget.audioData.bgColor,
+        backgroundColor: audioData.bgColor,
         appBar: AppBar(
           title: Image.asset('assets/pediatko-logo.png', height: 25),
           centerTitle: true,
-          backgroundColor: widget.audioData.bgColor,
+          backgroundColor: audioData.bgColor,
           elevation: 0,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
@@ -186,12 +132,12 @@ class _RecordingState extends State<RecordingPlayer> {
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: widget.audioData.bgColor,
+                                color: audioData.bgColor,
                               ),
                               child: Hero(
                                 tag: 'imageUrl',
                                 child: Image.network(
-                                  widget.audioData.imageUrl,
+                                  audioData.imageUrl,
                                 ),
                                 transitionOnUserGestures: true,
                               ),
@@ -199,17 +145,17 @@ class _RecordingState extends State<RecordingPlayer> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              widget.audioData.showName,
+                              audioData.showName,
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: widget.audioData.bgColor),
+                                  color: audioData.bgColor),
                             ),
                             const SizedBox(height: 10),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Text(
-                                widget.audioData.title,
+                                audioData.title,
                                 style: const TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold),
                               ),
@@ -218,7 +164,7 @@ class _RecordingState extends State<RecordingPlayer> {
                             SizedBox(
                               height: height * 0.25,
                               child: SingleChildScrollView(
-                                child: Text(widget.audioData.titleDescription),
+                                child: Text(audioData.titleDescription),
                               ),
                             ),
                           ],
@@ -230,9 +176,7 @@ class _RecordingState extends State<RecordingPlayer> {
                 Center(
                   child: SizedBox(
                     height: height * 0.18,
-                    child: ControlButtons(_player,
-                        audioDataList: widget.audioDataList,
-                        index: widget.audioData.current),
+                    child: ControlButtons(_player),
                   ),
                 ),
 
