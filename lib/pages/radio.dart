@@ -148,7 +148,7 @@ class _RadioState extends State<RadioPlayer> {
                     }),
               ),
               SizedBox(
-                child: ControlButtons(_player),
+                child: ControlButtons(_player, isLive: true),
                 height: height * 0.2,
               ),
               const SizedBox(height: 30),

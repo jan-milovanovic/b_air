@@ -176,7 +176,7 @@ class _RecordingState extends State<RecordingPlayer> {
                 Center(
                   child: SizedBox(
                     height: height * 0.18,
-                    child: ControlButtons(_player),
+                    child: ControlButtons(_player, isLive: false),
                   ),
                 ),
 
