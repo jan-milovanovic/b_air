@@ -5,16 +5,10 @@ import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
-import 'audioplay/player_seekbar.dart';
-import 'audioplay/control_buttons.dart';
-import '../audio_data.dart';
+import 'player_seekbar.dart';
+import 'control_buttons.dart';
+import '../../audio_data.dart';
 
-/// This is a player specifically for recordings
-/// It has a different UI compared to the radio player
-/// Player fetches all needed audio data, creates a fitting audio source to play
-///
-/// Do not remove 'hls' and 'hls_sec'
-/// some files, although not live, are given in those formats
 class RecordingPlayer extends StatefulWidget {
   const RecordingPlayer({
     Key? key,
@@ -179,7 +173,6 @@ class _RecordingState extends State<RecordingPlayer> {
                     child: ControlButtons(_player, isLive: false),
                   ),
                 ),
-
                 StreamBuilder<PositionData>(
                   stream: _positionDataStream,
                   builder: (context, snapshot) {
@@ -196,7 +189,6 @@ class _RecordingState extends State<RecordingPlayer> {
                   },
                 ),
                 const SizedBox(height: 30.0),
-                //const Spacer(flex: 1),
               ],
             ),
           ),

@@ -5,8 +5,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 /// Third window of the homepage screen
 /// contains a body with webview custom page
-///
-/// TODO: Edges of bars are smooth, so white background leaks into the window
 class Webview extends StatefulWidget {
   const Webview({Key? key, required this.url}) : super(key: key);
 

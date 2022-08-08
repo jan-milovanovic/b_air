@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:pediatko/audio_data.dart';
-import 'package:pediatko/dialog.dart';
 import 'package:pediatko/pages/audioplay/playlist_manager.dart';
-import 'package:pediatko/pages/recording_player.dart';
+import 'package:pediatko/pages/audioplay/recording_player.dart';
 
 /// playlist page displays data for a single recording album
 /// text description is scrollable with a FIXED height
