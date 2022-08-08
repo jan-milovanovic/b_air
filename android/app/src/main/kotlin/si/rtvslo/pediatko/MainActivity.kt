@@ -1,4 +1,4 @@
-package com.example.b_air
+package si.rtvslo.pediatko
 
 import io.flutter.embedding.android.FlutterActivity
 
