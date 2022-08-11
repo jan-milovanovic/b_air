@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:pediatko/auth/secrets.dart' as secret;
-import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 
+import 'package:pediatko/auth/client_id.dart' as secret;
+import 'package:http/http.dart' as http;
 import 'show.dart';
 
 /// contains all necessary data needed to be displayed for a specific recording
