@@ -3,10 +3,6 @@ import 'package:pediatko/audio_data.dart';
 import 'package:pediatko/pages/audioplay/playlist_manager.dart';
 import 'package:pediatko/pages/audioplay/recording_player.dart';
 
-/// playlist page displays data for a single recording album
-/// text description is scrollable with a FIXED height
-/// half of mobile screen should display all avail. audio in a scrollable form
-/// specific recording texts text may also be scrolled horizontally (length)
 class PlaylistPage extends StatefulWidget {
   const PlaylistPage({Key? key, required this.audioDataList}) : super(key: key);
 

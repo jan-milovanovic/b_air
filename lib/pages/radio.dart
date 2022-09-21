@@ -9,8 +9,6 @@ import 'audioplay/control_buttons.dart';
 import 'package:pediatko/radiodata.dart';
 import 'package:pediatko/dialog.dart';
 
-/// radio player contains a single continuous live HLS audio stream
-/// all data for the radio is hand given in the 'home_page.dart' file
 class RadioPlayer extends StatefulWidget {
   const RadioPlayer({Key? key, required this.radioData}) : super(key: key);
 
@@ -36,11 +34,7 @@ class _RadioState extends State<RadioPlayer> {
   Future<void> _init() async {
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.speech());
-    // Listen to errors during playback.
-    _player.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace stackTrace) {
-      //print('A stream error occurred: $e');
-    });
+
     try {
       final AudioSource audio;
 

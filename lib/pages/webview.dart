@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:webview_flutter/webview_flutter.dart';
 
-/// Third window of the homepage screen
-/// contains a body with webview custom page
 class Webview extends StatefulWidget {
   const Webview({Key? key, required this.url}) : super(key: key);
 

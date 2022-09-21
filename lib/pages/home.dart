@@ -5,9 +5,6 @@ import 'playlist.dart';
 import 'package:pediatko/dialog.dart';
 import 'package:pediatko/show.dart';
 
-/// Home class contains a grid of all 6 given recordings
-/// grid may be vertically scrollable if device is on smaller side
-/// each track contains specific color data, which is sent to next windows
 class Home extends StatefulWidget {
   const Home({Key? key, required this.showData}) : super(key: key);
 
@@ -31,7 +28,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-  /// grid renders from top left to bottom right
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,14 +48,6 @@ class _HomeState extends State<Home> {
     );
   }
 
-  /// builds grid widgets based on future audio data
-  ///
-  /// a specific widget can fail to load, will display error message instead of
-  /// the recording that is supposed to load
-  /// Example: if track does not exist, widget will display center text: 'null'
-  ///
-  /// upon all widgets failing to load -> alert dialog is opened notifying user
-  /// to check their connection. Leads user back to login screen (pop x2)
   SizedBox buttonAudioLoader(Future<List<AudioData>> futureAudioData) {
     // test dynamic (better UI for tablets)
     final height = MediaQuery.of(context).size.height;
@@ -80,10 +68,8 @@ class _HomeState extends State<Home> {
               Future.delayed(
                   Duration.zero, () => noInternetConnectionDialog(context, 2));
               return notLoaded();
-              //return Center(child: Text('${snapshot.error}'));
             } else {
               return notLoaded();
-              //return Center(child: Text('${snapshot.error}'));
             }
           } else if (!snapshot.hasData) {
             return loadingIndicator();
