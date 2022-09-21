@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
+import 'package:pediatko/dialog.dart';
 import 'package:rxdart/rxdart.dart';
 import 'player_seekbar.dart';
 import 'control_buttons.dart';
@@ -57,7 +58,7 @@ class _RecordingState extends State<RecordingPlayer> {
       _player.play();
     } catch (e) {
       // Catch load errors: 404, invalid url ...
-      print("Error loading playlist: $e");
+      noInternetConnectionDialog(context, 1);
     }
   }
 
