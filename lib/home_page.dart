@@ -70,12 +70,6 @@ class _HomePageState extends State<HomePage> {
               'assets/icons/ico-Logout.png',
               height: 25,
             ),
-            /*
-            icon: const Icon(
-              Icons.logout_outlined,
-              size: 30,
-            ),*/
-            //padding: const EdgeInsets.only(left: 15),
             onPressed: () => showDialog(
               context: context,
               builder: (_) {
