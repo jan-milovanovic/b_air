@@ -21,9 +21,6 @@ class AudioData {
   final String showDescription;
   final String url;
   final Color bgColor;
-  final int? previous;
-  final int current;
-  final int? next;
   final String? id;
 
   AudioData({
@@ -34,28 +31,21 @@ class AudioData {
     required this.showDescription,
     required this.url,
     required this.bgColor,
-    this.previous,
-    required this.current,
-    this.next,
     this.id,
   });
 
   factory AudioData.fromJson(
       Map<String, dynamic> json, int i, int recNumber, Show showData) {
     return AudioData(
-      imageUrl: showData.iconUrl,
-      title: json['response']['recordings'][i]['title'],
-      titleDescription: json['response']['recordings'][i]['description'],
-      showName: json['response']['recordings'][i]['showName'],
-      showDescription: json['response']['recordings'][i]['showDescription'],
-      url: json['response']['recordings'][i]['link'],
-      id: json['response']['recordings'][i]['id'],
-      bgColor:
-          Color(int.parse(showData.bgColor.replaceFirst('#', 'ff'), radix: 16)),
-      previous: i - 1 < 0 ? null : i - 1,
-      current: i,
-      next: i + 1 > recNumber ? null : i + 1,
-    );
+        imageUrl: showData.iconUrl,
+        title: json['response']['recordings'][i]['title'],
+        titleDescription: json['response']['recordings'][i]['description'],
+        showName: json['response']['recordings'][i]['showName'],
+        showDescription: json['response']['recordings'][i]['showDescription'],
+        url: json['response']['recordings'][i]['link'],
+        id: json['response']['recordings'][i]['id'],
+        bgColor: Color(
+            int.parse(showData.bgColor.replaceFirst('#', 'ff'), radix: 16)));
   }
 }
 
