@@ -178,9 +178,8 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   TextButton continueButton(BuildContext context) {
     return TextButton(
       style: TextButton.styleFrom(
-        primary: Colors.white,
+        foregroundColor: Colors.white,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        onSurface: Colors.black,
         minimumSize: const Size(90.0, 90.0),
         shape: const CircleBorder(),
       ),
