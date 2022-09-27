@@ -23,7 +23,7 @@ class RecordingPlayer extends StatefulWidget {
   final List<AudioData> audioDataList;
 
   @override
-  _RecordingState createState() => _RecordingState();
+  State<StatefulWidget> createState() => _RecordingState();
 }
 
 class _RecordingState extends State<RecordingPlayer> {
@@ -58,7 +58,9 @@ class _RecordingState extends State<RecordingPlayer> {
       _player.play();
     } catch (e) {
       // Catch load errors: 404, invalid url ...
-      noInternetConnectionDialog(context, 1);
+      if (mounted) {
+        noInternetConnectionDialog(context, 1);
+      }
     }
   }
 
@@ -129,14 +131,14 @@ class _RecordingState extends State<RecordingPlayer> {
                                 borderRadius: BorderRadius.circular(20),
                                 color: audioData.bgColor,
                               ),
+                              height: iconSize,
                               child: Hero(
                                 tag: 'imageUrl',
+                                transitionOnUserGestures: true,
                                 child: Image.network(
                                   audioData.imageUrl,
                                 ),
-                                transitionOnUserGestures: true,
                               ),
-                              height: iconSize,
                             ),
                             const SizedBox(height: 10),
                             Text(

@@ -11,7 +11,7 @@ class Home extends StatefulWidget {
   final List<Show> showData;
 
   @override
-  _HomeState createState() => _HomeState();
+  State<StatefulWidget> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
@@ -55,7 +55,7 @@ class _HomeState extends State<Home> {
     final hw = width * height;
     final iconSize = hw * 0.00036;
 
-    GlobalKey _key = GlobalKey();
+    GlobalKey globalKey = GlobalKey();
 
     return SizedBox(
       height: height * 0.5,
@@ -83,12 +83,12 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 child: IconButton(
-                  key: _key,
+                  key: globalKey,
                   padding: const EdgeInsets.all(15),
                   icon: Image.network(snapshot.data![0].imageUrl),
                   iconSize: iconSize,
                   onPressed: () => pageRouteAnimation(
-                      context, snapshot.data!, _key, height, width),
+                      context, snapshot.data!, globalKey, height, width),
                 ),
               ),
               const SizedBox(height: 8),

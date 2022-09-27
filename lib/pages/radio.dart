@@ -1,12 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
+import 'package:pediatko/radiodata.dart';
 
 import 'audioplay/control_buttons.dart';
-import 'package:pediatko/radiodata.dart';
 import 'package:pediatko/dialog.dart';
 
 class RadioPlayer extends StatefulWidget {
@@ -15,7 +17,7 @@ class RadioPlayer extends StatefulWidget {
   final RadioData radioData;
 
   @override
-  _RadioState createState() => _RadioState();
+  State<StatefulWidget> createState() => _RadioState();
 }
 
 class _RadioState extends State<RadioPlayer> {
@@ -32,6 +34,8 @@ class _RadioState extends State<RadioPlayer> {
   }
 
   Future<void> _init() async {
+    final radioStreamUrl = await RadioData().fetchStreamData(context);
+
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.speech());
 
@@ -40,19 +44,21 @@ class _RadioState extends State<RadioPlayer> {
 
       /// HLS stream
       audio = HlsAudioSource(
-        Uri.parse(widget.radioData.stream),
+        Uri.parse(radioStreamUrl),
         tag: MediaItem(
           id: '0',
-          title: widget.radioData.title,
-          displaySubtitle: widget.radioData.subtitle,
-          artUri: Uri.parse(widget.radioData.iconUrl),
+          title: widget.radioData.title!,
+          displaySubtitle: widget.radioData.subtitle!,
+          artUri: Uri.parse(widget.radioData.iconUrl!),
         ),
       );
 
       await _player.setAudioSource(audio);
       _player.play();
     } catch (e) {
-      noInternetConnectionDialog(context, 2);
+      if (mounted) {
+        noInternetConnectionDialog(context, 2);
+      }
       throw Exception('Could not load audio source');
     }
   }
@@ -142,8 +148,8 @@ class _RadioState extends State<RadioPlayer> {
                     }),
               ),
               SizedBox(
-                child: ControlButtons(_player, isLive: true),
                 height: height * 0.2,
+                child: ControlButtons(_player, isLive: true),
               ),
               const SizedBox(height: 30),
             ],

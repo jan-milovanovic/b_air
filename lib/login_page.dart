@@ -11,7 +11,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _LoginState createState() => _LoginState();
+  State<StatefulWidget> createState() => _LoginState();
 }
 
 class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
@@ -216,7 +216,9 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         setState(() {
           checkStateIndex = 1;
         });
-        Navigator.push(context, homePageAnimation(p));
+        if (mounted) {
+          Navigator.push(context, homePageAnimation(p));
+        }
       } else {
         setState(() {
           checkStateIndex = 2;

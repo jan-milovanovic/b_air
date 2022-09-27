@@ -107,9 +107,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
               borderRadius: BorderRadius.circular(20),
               child: Hero(
                 tag: 'imageUrl',
+                transitionOnUserGestures: true,
                 child: Image.network(widget.audioDataList[0].imageUrl,
                     width: width / 3),
-                transitionOnUserGestures: true,
               ),
             ),
             const SizedBox(height: 10),

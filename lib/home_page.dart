@@ -20,7 +20,7 @@ class HomePage extends StatefulWidget {
   final Preslikave preslikava;
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<StatefulWidget> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
