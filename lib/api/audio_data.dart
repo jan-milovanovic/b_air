@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:pediatko/auth/client_id.dart' as secret;
 import 'package:http/http.dart' as http;
-import 'show.dart';
+import '../show.dart';
 
 /// contains all necessary data needed to be displayed for a specific recording
 /// important: audiodata MUST INCLUDE either image OR imageUrl

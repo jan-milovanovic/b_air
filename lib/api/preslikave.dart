@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pediatko/auth/client_id.dart' as secret;
 import 'package:pediatko/dialog.dart';
-import 'show.dart';
+import '../show.dart';
 import 'radiodata.dart';
 
 class Preslikave {

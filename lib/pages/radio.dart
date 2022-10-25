@@ -6,9 +6,9 @@ import 'package:just_audio_background/just_audio_background.dart';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
-import 'package:pediatko/radiodata.dart';
+import 'package:pediatko/api/radiodata.dart';
 
-import 'audioplay/control_buttons.dart';
+import 'audioplay/custom widgets/control_buttons.dart';
 import 'package:pediatko/dialog.dart';
 
 class RadioPlayer extends StatefulWidget {

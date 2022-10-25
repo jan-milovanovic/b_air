@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pediatko/audio_data.dart';
+import 'package:pediatko/api/audio_data.dart';
 import 'package:pediatko/pages/audioplay/playlist_manager.dart';
-import 'package:pediatko/pages/audioplay/recording_player.dart';
+import 'package:pediatko/pages/audioplay/custom%20widgets/recording_player.dart';
 
 class PlaylistPage extends StatefulWidget {
   const PlaylistPage({Key? key, required this.audioDataList}) : super(key: key);

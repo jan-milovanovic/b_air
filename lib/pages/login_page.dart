@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
-import 'password_manager.dart';
+import '../password_manager.dart';
 
-import 'preslikave.dart';
-import 'home_page.dart';
+import '../api/preslikave.dart';
+import '../home_navigator.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,10 +16,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   final inputFieldController = TextEditingController();
-
   late AnimationController _checkmarkController;
-
   late Future<Preslikave> preslikava;
+  bool isLoading = false;
 
   /// checkmark icon in input field
   /// 0 = neutral, 1 = success, 2 = invalid (login)
@@ -41,6 +40,20 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       color: Color.fromARGB(200, 255, 0, 0),
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    preslikava = getTransformation(context);
+    readCheckProceedPassword();
+    inputFieldController.clear();
+
+    _checkmarkController = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
+
+    Future.delayed(const Duration(seconds: 1))
+        .then((value) => FlutterNativeSplash.remove());
+  }
 
   /// return true or false when checking:
   /// if current date is less than expire date of currently used passcode
@@ -68,7 +81,7 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
           (value) => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => HomePage(
+              builder: (context) => HomeNavigator(
                 preslikava: value,
               ),
             ),
@@ -80,60 +93,6 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     } catch (e) {
       throw Exception('Password read/write issue');
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    preslikava = getTransformation(context);
-    readCheckProceedPassword();
-    inputFieldController.clear();
-
-    _checkmarkController = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
-
-    Future.delayed(const Duration(seconds: 1))
-        .then((value) => FlutterNativeSplash.remove());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final double heightResized = MediaQuery.of(context).viewInsets.bottom;
-    Color defaultColor = Theme.of(context).colorScheme.primary;
-
-    return Scaffold(
-      backgroundColor: defaultColor,
-      body: Column(
-        children: [
-          const Spacer(flex: 1),
-          Image.asset('assets/pediatko-logo.png', height: 50),
-          const Spacer(flex: 1),
-          Container(
-            decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                color: Colors.white),
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-            padding: const EdgeInsets.all(20),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              SizedBox(height: heightResized == 0 ? 20 : 0),
-              Icon(
-                Icons.lock,
-                size: 40,
-                color: defaultColor,
-              ),
-              SizedBox(height: heightResized == 0 ? 20 : 10),
-              welcomeText(),
-              SizedBox(height: heightResized == 0 ? 40 : 20),
-              inputField(inputFieldController),
-              SizedBox(height: heightResized == 0 ? 50 : 20),
-              continueButton(context),
-              SizedBox(height: heightResized == 0 ? 20 : 0),
-            ]),
-          ),
-          const Spacer(flex: 1),
-        ],
-      ),
-    );
   }
 
   /// displays a multiline welcome text
@@ -175,6 +134,7 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     );
   }
 
+  // using textbutton over iconbutton for background color
   TextButton continueButton(BuildContext context) {
     return TextButton(
       style: TextButton.styleFrom(
@@ -183,10 +143,13 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         minimumSize: const Size(90.0, 90.0),
         shape: const CircleBorder(),
       ),
-      child: const Icon(Icons.arrow_forward_rounded, size: 60),
-      onPressed: () {
-        login(context, inputFieldController.text);
-      },
+      child: isLoading
+          ? const CircularProgressIndicator(
+              color: Colors.white,
+            )
+          : const Icon(Icons.arrow_forward_rounded, size: 60),
+      onPressed: () =>
+          isLoading ? null : login(context, inputFieldController.text),
     );
   }
 
@@ -206,24 +169,24 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   /// false login attempt will alert user by coloring and animating the check mark
   /// a successful login will color the check mark green and proceed to next window
   void login(BuildContext context, String password) async {
+    setState(() => isLoading = true);
     bool valid;
 
     try {
-      Preslikave p = await preslikava.then((value) => value);
+      Preslikave p = await preslikava;
+      setState(() => isLoading = false);
 
       valid = checkValid(p.tokens, password);
-      if (valid) {
-        setState(() {
-          checkStateIndex = 1;
-        });
-        if (mounted) {
-          Navigator.push(context, homePageAnimation(p));
-        }
-      } else {
-        setState(() {
-          checkStateIndex = 2;
-        });
+
+      if (!valid) {
+        setState(() => checkStateIndex = 2);
         _checkmarkController.forward(from: 0.0);
+        return;
+      }
+
+      setState(() => checkStateIndex = 1);
+      if (mounted) {
+        Navigator.push(context, homePageAnimation(p));
       }
     } catch (e) {
       preslikava = getTransformation(context);
@@ -236,7 +199,7 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   Route homePageAnimation(Preslikave p) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          HomePage(preslikava: p),
+          HomeNavigator(preslikava: p),
       transitionDuration: const Duration(seconds: 1),
       reverseTransitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -263,6 +226,46 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
           child: checkState[checkStateIndex],
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double heightResized = MediaQuery.of(context).viewInsets.bottom;
+    Color defaultColor = Theme.of(context).colorScheme.primary;
+
+    return Scaffold(
+      backgroundColor: defaultColor,
+      body: Column(
+        children: [
+          const Spacer(flex: 1),
+          Image.asset('assets/pediatko-logo.png', height: 50),
+          const Spacer(flex: 1),
+          Container(
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: Colors.white),
+            margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            padding: const EdgeInsets.all(20),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              SizedBox(height: heightResized == 0 ? 20 : 0),
+              Icon(
+                Icons.lock,
+                size: 40,
+                color: defaultColor,
+              ),
+              SizedBox(height: heightResized == 0 ? 20 : 10),
+              welcomeText(),
+              SizedBox(height: heightResized == 0 ? 40 : 20),
+              inputField(inputFieldController),
+              SizedBox(height: heightResized == 0 ? 50 : 20),
+              continueButton(context),
+              SizedBox(height: heightResized == 0 ? 20 : 0),
+            ]),
+          ),
+          const Spacer(flex: 1),
+        ],
+      ),
     );
   }
 }

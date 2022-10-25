@@ -5,7 +5,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:pediatko/audio_data.dart';
+import 'package:pediatko/api/audio_data.dart';
 import 'package:pediatko/auth/client_id.dart' as secret;
 
 class PlaylistManager {

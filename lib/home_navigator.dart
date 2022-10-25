@@ -6,7 +6,7 @@ import 'pages/radio.dart';
 import 'pages/webview.dart';
 
 import 'dialog.dart';
-import 'preslikave.dart';
+import 'api/preslikave.dart';
 
 /// homepage contains the three main windows upon logging in:
 /// Home -> grid of 6 recordings
@@ -14,16 +14,16 @@ import 'preslikave.dart';
 /// Webview -> Page leading to a custom website
 ///
 /// app bar and bottom navigation bar are shared between those windows
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.preslikava}) : super(key: key);
+class HomeNavigator extends StatefulWidget {
+  const HomeNavigator({Key? key, required this.preslikava}) : super(key: key);
 
   final Preslikave preslikava;
 
   @override
-  State<StatefulWidget> createState() => _HomePageState();
+  State<StatefulWidget> createState() => _HomeNavigatorState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeNavigatorState extends State<HomeNavigator> {
   late final List<Widget> screens;
 
   int currentIndex = 0;
