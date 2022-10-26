@@ -14,22 +14,21 @@ class PlaylistManager {
   ConcatenatingAudioSource getPlaylist() => playlist;
 
   Future<PlaylistManager> create(List<AudioData> audioDataList) async {
-    ConcatenatingAudioSource playlist;
     List<AudioSource> sourcePlaylist = [];
 
     for (var audioData in audioDataList) {
       sourcePlaylist.add(await getAudioSource(audioData));
     }
 
-    playlist = ConcatenatingAudioSource(
-        useLazyPreparation: true,
-        shuffleOrder: DefaultShuffleOrder(),
-        children: sourcePlaylist);
+    ConcatenatingAudioSource playlist = ConcatenatingAudioSource(
+      useLazyPreparation: true,
+      children: sourcePlaylist,
+    );
 
-    PlaylistManager manager = PlaylistManager();
-    manager.playlist = playlist;
+    PlaylistManager playlistManager = PlaylistManager();
+    playlistManager.playlist = playlist;
 
-    return manager;
+    return playlistManager;
   }
 
   Future<AudioSource> getAudioSource(AudioData audioData) async {
@@ -95,8 +94,6 @@ class PlaylistManager {
       }
 
       return audio;
-      /* } on TimeoutException {
-      noInternetConnectionDialog(context, 2);*/
     } catch (e) {
       throw Exception('$e');
     }

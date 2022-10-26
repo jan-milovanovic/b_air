@@ -35,7 +35,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         : const SizedBox(height: 5);
   }
 
-  loadRecordings(PlaylistManager pm) {
+  loadRecordings(PlaylistManager playlistManager) {
     final Color defaultColor = Theme.of(context).colorScheme.primary;
 
     return ListView.builder(
@@ -48,7 +48,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => RecordingPlayer(
-                    playlist: pm.getPlaylist(),
+                    playlist: playlistManager.getPlaylist(),
                     audioDataList: widget.audioDataList,
                     index: index,
                   ),
