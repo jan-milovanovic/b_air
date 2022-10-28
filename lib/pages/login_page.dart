@@ -263,6 +263,13 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
               SizedBox(height: heightResized == 0 ? 20 : 0),
             ]),
           ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'različica: 1.1.0',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
           const Spacer(flex: 1),
         ],
       ),
