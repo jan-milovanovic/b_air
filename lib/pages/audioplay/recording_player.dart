@@ -6,9 +6,9 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
 import 'package:pediatko/dialog.dart';
 import 'package:rxdart/rxdart.dart';
-import 'player_seekbar.dart';
-import 'control_buttons.dart';
-import '../../../api/audio_data.dart';
+import 'custom widgets/player_seekbar.dart';
+import 'custom widgets/control_buttons.dart';
+import '../../api/audio_data.dart';
 
 class RecordingPlayer extends StatefulWidget {
   const RecordingPlayer({
