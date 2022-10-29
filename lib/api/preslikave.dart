@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/animation.dart';
 import 'package:http/http.dart' as http;
 import 'package:pediatko/auth/client_id.dart' as secret;
 import 'package:pediatko/dialog.dart';
@@ -23,11 +24,19 @@ class Preslikave {
     List<Show> firstPage = [];
 
     for (var show in response['first_page']) {
-      firstPage.add(Show(
+      firstPage.add(
+        Show(
           showId: show['showId'],
           title: show['title'],
+          description: show['description'],
           iconUrl: show['icon_url'],
-          bgColor: show['bg_color'] ?? show['color']));
+          bgColor: Color(
+            int.parse(
+                (show['bg_color'] ?? show['color']).replaceFirst('#', 'ff'),
+                radix: 16),
+          ),
+        ),
+      );
     }
 
     RadioData rData = RadioData(
@@ -50,7 +59,7 @@ Future<Preslikave> getTransformation(context) async {
   try {
     final response = await http
         .get(Uri.parse(
-            'https://api.rtvslo.si/preslikave/bair?client_id=${secret.clientId}&_=1654497862648'))
+            'https://api.dev.rtvslo.si/preslikave/bair?client_id=${secret.clientId}&_=1654497862648'))
         .timeout(const Duration(seconds: 10));
 
     if (response.statusCode == 200) {

@@ -15,37 +15,30 @@ import '../show.dart';
 /// image for everything else
 class AudioData {
   final String title;
-  final String imageUrl;
   final String titleDescription;
   final String showName;
   final String showDescription;
   final String url;
-  final Color bgColor;
   final String? id;
 
   AudioData({
     required this.title,
-    required this.imageUrl,
     required this.titleDescription,
     required this.showName,
     required this.showDescription,
     required this.url,
-    required this.bgColor,
     this.id,
   });
 
-  factory AudioData.fromJson(
-      Map<String, dynamic> json, int i, int recNumber, Show showData) {
+  factory AudioData.fromJson(Map<String, dynamic> json, int i, Show showData) {
     return AudioData(
-        imageUrl: showData.iconUrl,
-        title: json['response']['recordings'][i]['title'],
-        titleDescription: json['response']['recordings'][i]['description'],
-        showName: json['response']['recordings'][i]['showName'],
-        showDescription: json['response']['recordings'][i]['showDescription'],
-        url: json['response']['recordings'][i]['link'],
-        id: json['response']['recordings'][i]['id'],
-        bgColor: Color(
-            int.parse(showData.bgColor.replaceFirst('#', 'ff'), radix: 16)));
+      title: json['entry'][i]['title'],
+      titleDescription: json['entry'][i]['summary'],
+      showName: json['title'],
+      showDescription: 'TODO: get show description',
+      url: json['entry'][i]['extensions']['signer_api'],
+      id: json['entry'][i]['id'],
+    );
   }
 }
 
@@ -53,7 +46,7 @@ Future<List<AudioData>> getTrack(context, Show showData) async {
   try {
     final response = await http
         .get(Uri.parse(
-            'https://api.rtvslo.si/ava/getSearch2?client_id=${secret.clientId}&pageNumber=0&pageSize=12&sort=date&order=desc&showId=${showData.showId}'))
+            'https://api.rtvslo.si/pipes/show/?client_id=${secret.clientId}&id=${showData.showId}&group=show&clip=show&shuffle=0&showAds=0&_=1666948097204'))
         .timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
@@ -62,8 +55,8 @@ Future<List<AudioData>> getTrack(context, Show showData) async {
       List<AudioData> audioData = [];
 
       for (int i = 0; i < recNumber; i++) {
-        audioData.add(AudioData.fromJson(
-            jsonDecode(response.body), i, recNumber - 1, showData));
+        audioData
+            .add(AudioData.fromJson(jsonDecode(response.body), i, showData));
       }
 
       return audioData;
@@ -78,5 +71,5 @@ Future<List<AudioData>> getTrack(context, Show showData) async {
 }
 
 int getNumberOfRecordings(res) {
-  return res['response']['recordings'].length;
+  return res['entry'].length;
 }

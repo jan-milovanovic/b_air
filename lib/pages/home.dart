@@ -23,9 +23,10 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
 
+    /*
     for (int i = 0; i < widget.showData.length; i++) {
       futureAudioData.add(getTrack(context, widget.showData[i]));
-    }
+    }*/
   }
 
   @override
@@ -42,73 +43,55 @@ class _HomeState extends State<Home> {
           padding: const EdgeInsets.all(20.0),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, crossAxisSpacing: 0.0, mainAxisSpacing: 30.0),
-          children: [for (var data in futureAudioData) buttonAudioLoader(data)],
+          children: [for (var show in widget.showData) buttonAudioLoader(show)],
         ),
       ),
     );
   }
 
-  SizedBox buttonAudioLoader(Future<List<AudioData>> futureAudioData) {
+  SizedBox buttonAudioLoader(Show show) {
     // test dynamic (better UI for tablets)
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final hw = width * height;
-    final iconSize = hw * 0.00036;
+    final iconSize = hw * 0.00033;
 
     GlobalKey globalKey = GlobalKey();
 
     return SizedBox(
       height: height * 0.5,
-      child: FutureBuilder<List<AudioData>>(
-        future: futureAudioData,
-        builder: ((context, snapshot) {
-          if (snapshot.hasError ||
-              (snapshot.hasData && snapshot.data!.isEmpty)) {
-            if (++errorCounter == audioDataNumber) {
-              Future.delayed(
-                  Duration.zero, () => noInternetConnectionDialog(context, 2));
-              return notLoaded();
-            } else {
-              return notLoaded();
-            }
-          } else if (!snapshot.hasData) {
-            return loadingIndicator();
-          } else {
-            return Column(children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: snapshot.data![0].bgColor,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(20),
-                  ),
-                ),
-                child: IconButton(
-                  key: globalKey,
-                  padding: const EdgeInsets.all(15),
-                  icon: Image.network(snapshot.data![0].imageUrl),
-                  iconSize: iconSize,
-                  onPressed: () => pageRouteAnimation(
-                      context, snapshot.data!, globalKey, height, width),
-                ),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: iconSize + 30, // icon + 2*padding border
-                child: Text(
-                  snapshot.data![0].showName,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-              ),
-            ]);
-          }
-        }),
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: show.bgColor,
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+            ),
+            child: IconButton(
+              key: globalKey,
+              padding: const EdgeInsets.all(15),
+              icon: Image.network(show.iconUrl),
+              iconSize: iconSize,
+              onPressed: () =>
+                  pageRouteAnimation(context, show, globalKey, height, width),
+            ),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: iconSize + 30, // icon + 2*padding border
+            child: Text(
+              show.title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  pageRouteAnimation(context, snapshot, key, height, width) {
+  pageRouteAnimation(BuildContext context, Show show, dynamic key,
+      double height, double width) {
     RenderBox? box = key.currentContext?.findRenderObject() as RenderBox?;
     Offset? position = box?.localToGlobal(Offset.zero);
     double x = 0.0;
@@ -128,7 +111,7 @@ class _HomeState extends State<Home> {
     Navigator.of(context).push(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) {
-          return PlaylistPage(audioDataList: snapshot);
+          return PlaylistPage(show: show);
         },
         transitionDuration: const Duration(milliseconds: 300),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -144,12 +127,11 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Container notLoaded() {
+  Container notLoaded(double iconSize) {
     return Container(
       margin: const EdgeInsets.all(10.0),
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
-        //alignment: Alignment.center,
         color: Colors.black26,
       ),
       child: const Center(

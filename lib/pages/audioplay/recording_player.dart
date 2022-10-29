@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
 import 'package:pediatko/dialog.dart';
+import 'package:pediatko/show.dart';
 import 'package:rxdart/rxdart.dart';
 import 'custom widgets/player_seekbar.dart';
 import 'custom widgets/control_buttons.dart';
@@ -16,11 +17,13 @@ class RecordingPlayer extends StatefulWidget {
     required this.playlist,
     required this.audioDataList,
     required this.index,
+    required this.show,
   }) : super(key: key);
 
   final ConcatenatingAudioSource playlist;
   final int index;
   final List<AudioData> audioDataList;
+  final Show show;
 
   @override
   State<StatefulWidget> createState() => _RecordingState();
@@ -91,11 +94,11 @@ class _RecordingState extends State<RecordingPlayer> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: audioData.bgColor,
+        backgroundColor: widget.show.bgColor,
         appBar: AppBar(
           title: Image.asset('assets/pediatko-logo.png', height: 25),
           centerTitle: true,
-          backgroundColor: audioData.bgColor,
+          backgroundColor: widget.show.bgColor,
           elevation: 0,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
@@ -129,14 +132,14 @@ class _RecordingState extends State<RecordingPlayer> {
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: audioData.bgColor,
+                                color: widget.show.bgColor,
                               ),
                               height: iconSize,
                               child: Hero(
                                 tag: 'imageUrl',
                                 transitionOnUserGestures: true,
                                 child: Image.network(
-                                  audioData.imageUrl,
+                                  widget.show.iconUrl,
                                 ),
                               ),
                             ),
@@ -146,7 +149,7 @@ class _RecordingState extends State<RecordingPlayer> {
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: audioData.bgColor),
+                                  color: widget.show.bgColor),
                             ),
                             const SizedBox(height: 10),
                             SingleChildScrollView(
