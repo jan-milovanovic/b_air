@@ -21,16 +21,6 @@ V okviru diplomske naloge je bila razvita aplikacija, ki vsebuje vpis v aplikaci
 
 Mobilna aplikacija je napisana v jeziku Dart s pomočjo ogrodja Flutter.
 
-
-### Odvisnost od paketov:
-* just_audio & just_audio_background &emsp;&emsp; ***(predvajanje vsebine z možnostjo predvajanja v ozadju)***
-* webview_flutter &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; ***(webview za spletno anketo)***
-* google_fonts &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; ***(nabor različnih pisav)***
-* flutter_secure_storage &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; ***(shranjevanje informacije kot je geslo za vpis)***
-* intl &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; &emsp; ***(formatiranje datuma)***
-* flutter_native_splash &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***(pozdravni zaslon)***
-
-
 ## Slike
 Vpisni zaslon z animiranim indikatorjem, ki opozori uporabnika o vpisu napačnega / pravilnega gesla pred odprtjem nove strani
 <p align="center">
