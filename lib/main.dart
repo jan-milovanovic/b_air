@@ -3,7 +3,6 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:pediatko/authenticator.dart';
-import 'package:pediatko/constants/dialog.dart';
 import 'package:pediatko/constants/functions.dart';
 import 'package:pediatko/modals/data_provider.dart';
 import 'package:provider/provider.dart';
@@ -17,34 +16,31 @@ Future<void> main() async {
     androidNotificationChannelName: 'Audio playback',
     androidNotificationOngoing: true,
   );
-  runApp(const MyApp());
+
+  DataProvider dataProvider = await DataProvider.create();
+
+  runApp(MyApp(dataProvider: dataProvider));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key, required this.dataProvider}) : super(key: key);
+
+  final DataProvider dataProvider;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Pediatko',
-      theme: ThemeData(
-        primaryColor: const Color(0xff3fbbed),
-        textTheme: GoogleFonts.ptSansTextTheme(Theme.of(context).textTheme),
-      ),
-      //darkTheme: ThemeData.dark(),
-      home: FutureBuilder<DataProvider>(
-        future: DataProvider.create(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ChangeNotifierProvider(
-              create: (_) => snapshot.data!,
-              child: const AuthenticatorPage(),
-            );
-          }
-          return loadingIndicator();
-        },
+    return ChangeNotifierProvider(
+      create: (_) => dataProvider,
+      child: MaterialApp(
+        //debugShowCheckedModeBanner: false,
+        title: 'Pediatko',
+        theme: ThemeData(
+          primaryColor: const Color(0xff3fbbed),
+          textTheme: GoogleFonts.ptSansTextTheme(Theme.of(context).textTheme),
+        ),
+        //darkTheme: ThemeData.dark(),
+        home: const AuthenticatorPage(),
       ),
     );
   }
