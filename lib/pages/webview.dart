@@ -22,11 +22,13 @@ class WebviewState extends State<Webview> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      body: ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        child: WebView(initialUrl: widget.url),
+    return Expanded(
+      child: Container(
+        color: Colors.white,
+        child: WebView(
+          initialUrl: widget.url,
+          //backgroundColor: Colors.white,
+        ),
       ),
     );
   }
