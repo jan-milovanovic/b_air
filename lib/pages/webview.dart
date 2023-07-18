@@ -22,13 +22,12 @@ class WebviewState extends State<Webview> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        color: Colors.white,
-        child: WebView(
-          initialUrl: widget.url,
-          //backgroundColor: Colors.white,
-        ),
+    return Container(
+      color: Colors.white,
+      child: WebView(
+        initialUrl: widget.url,
+        javascriptMode: JavascriptMode.unrestricted,
+        backgroundColor: Colors.white,
       ),
     );
   }
