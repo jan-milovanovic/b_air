@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.0+172
+version: 2.1.0+180
 environment:
   sdk: ">=2.16.1 <3.0.0"
 
@@ -162,7 +162,7 @@ flutter_native_splash:
     # App icon without an icon background: This should be 1152×1152 pixels, and fit within a circle
     # 768 pixels in diameter.
     image: assets/splash-logo.png
-
+    
     # Splash screen background color.
     color: "#3fbbed"
 
