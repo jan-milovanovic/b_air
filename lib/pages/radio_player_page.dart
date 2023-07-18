@@ -56,9 +56,9 @@ class _RadioState extends State<RadioPlayerPage> {
       await _player.setAudioSource(audio);
       _player.play();
     } catch (e) {
-      if (mounted) {
-        CustomDialogs.noInternetConnectionDialog(context);
-      }
+      if (!mounted) return;
+
+      CustomDialogs.noInternetConnectionDialog(context);
       throw Exception('Could not load audio source');
     }
   }
@@ -164,6 +164,7 @@ class _RadioState extends State<RadioPlayerPage> {
         : Image(
             image: NetworkImage(artUri.toString()),
             height: iconSize,
+            width: iconSize,
           );
   }
 }
