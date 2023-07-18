@@ -114,7 +114,7 @@ class _SeekBarState extends State<SeekBar> {
                           ?.group(1) ??
                       '${widget.position}',
                   style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(' / ', style: Theme.of(context).textTheme.caption),
+              Text(' / ', style: Theme.of(context).textTheme.bodySmall),
               Text(
                   RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
                           .firstMatch("${widget.duration}")
