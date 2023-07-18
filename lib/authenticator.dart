@@ -17,7 +17,9 @@ class AuthenticatorPage extends StatelessWidget {
         bool? isAuthenticated = snapshot.data;
 
         if (snapshot.hasData) {
-          FlutterNativeSplash.remove();
+          Future.delayed(const Duration(seconds: 1)).then(
+            (value) => FlutterNativeSplash.remove(),
+          );
           return ChangeNotifierProvider.value(
             value: context.read<DataProvider>(),
             child: isAuthenticated! ? const HomeNavigator() : const LoginPage(),
@@ -25,7 +27,9 @@ class AuthenticatorPage extends StatelessWidget {
         }
 
         if (snapshot.hasError) {
-          FlutterNativeSplash.remove();
+          Future.delayed(const Duration(seconds: 1)).then(
+            (value) => FlutterNativeSplash.remove(),
+          );
           return ChangeNotifierProvider.value(
             value: context.read<DataProvider>(),
             child: const LoginPage(),
