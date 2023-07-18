@@ -42,6 +42,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
         future: playlist,
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
+            if (snapshot.data!.playlist.length == 0) {
+              return const Center(
+                child: Text('Ta seznam še nima dodanih pravljic :('),
+              );
+            }
+
             return ListView.builder(
                 itemCount: snapshot.data!.playlist.length,
                 scrollDirection: Axis.vertical,

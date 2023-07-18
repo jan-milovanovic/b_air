@@ -53,11 +53,13 @@ Future<List<Recording>> getTrack(context, Show showData) async {
         .timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
-      final List recordingList = jsonDecode(response.body)['response']['entry'];
+      final responseBody = jsonDecode(response.body)['response'];
+
+      if (responseBody is List && responseBody.isEmpty) return [];
 
       List<Recording> audioData = [];
 
-      for (var recording in recordingList) {
+      for (var recording in responseBody['entry']) {
         Recording rec = Recording.fromJson(recording);
         audioData.add(rec);
       }
