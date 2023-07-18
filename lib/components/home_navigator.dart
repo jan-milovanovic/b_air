@@ -64,17 +64,23 @@ class _HomeNavigatorState extends State<HomeNavigator> {
           backgroundColor: primaryColor,
           elevation: 0,
           leadingWidth: 70,
-          leading: IconButton(
-            icon: Image.asset(
-              'assets/icons/ico-Logout.png',
-              height: 25,
+          actions: [
+            IconButton(
+              icon: Image.asset(
+                'assets/icons/ico-Logout.png',
+                height: 25,
+              ),
+              onPressed: () => showDialog(
+                context: context,
+                builder: (_) {
+                  return CustomDialogs.logoutDialog(context);
+                },
+              ),
             ),
-            onPressed: () => showDialog(
-              context: context,
-              builder: (_) {
-                return CustomDialogs.logoutDialog(context);
-              },
-            ),
+          ],
+          leading: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset('assets/rtvslo-logo.png'),
           ),
         ),
         backgroundColor: Colors.white,
