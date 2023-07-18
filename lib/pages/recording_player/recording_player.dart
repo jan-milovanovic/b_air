@@ -104,12 +104,6 @@ class _RecordingState extends State<RecordingPlayer> {
             bottom: Radius.circular(20),
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_downward),
-          onPressed: () => Navigator.pop(context),
-          color: Colors.white,
-          iconSize: 30,
-        ),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -121,6 +115,7 @@ class _RecordingState extends State<RecordingPlayer> {
           children: [
             Expanded(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
@@ -159,23 +154,31 @@ class _RecordingState extends State<RecordingPlayer> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 8.0),
                         SizedBox(
-                          height: height * 0.25,
+                          //TODO: split between big, medium, and small displays
+                          height: height * 0.3 > 250 ? height * 0.3 : 200,
                           child: ShaderMask(
                             shaderCallback: (Rect bounds) {
                               return LinearGradient(
-                                begin: const Alignment(0, 0.8),
+                                stops: const [0.0, 0.1, 0.8, 1.0],
+                                begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors: [
-                                  Colors.white.withOpacity(0.8),
+                                  Colors.transparent,
+                                  Colors.white.withOpacity(1.0),
+                                  Colors.white.withOpacity(1.0),
                                   Colors.transparent
                                 ],
                               ).createShader(bounds);
                             },
                             blendMode: BlendMode.dstIn,
                             child: SingleChildScrollView(
-                              padding: const EdgeInsets.only(bottom: 16.0),
+                              physics: const BouncingScrollPhysics(),
+                              padding: const EdgeInsets.only(
+                                top: 14.0,
+                                bottom: 32.0,
+                              ),
                               child: Text(audioData.titleDescription),
                             ),
                           ),
@@ -187,13 +190,11 @@ class _RecordingState extends State<RecordingPlayer> {
               ),
             ),
             Center(
-              child: SizedBox(
-                height: height * 0.18,
-                child: ControlButtons(
-                  player: _player,
-                  isLive: false,
-                  color: widget.show.bgColor,
-                ),
+              child: ControlButtons(
+                player: _player,
+                isLive: false,
+                color: widget.show.bgColor,
+                height: height * 0.15,
               ),
             ),
             StreamBuilder<PositionData>(

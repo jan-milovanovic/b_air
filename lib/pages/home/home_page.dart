@@ -24,6 +24,7 @@ class _HomeState extends State<HomePage> {
     return Container(
       color: Colors.white,
       child: GridView.builder(
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.all(32.0),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pediatko/modals/show.dart';
 import 'package:pediatko/pages/recording_player/services/playlist_manager.dart';
@@ -45,6 +46,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 itemCount: snapshot.data!.playlist.length,
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
+                physics: const BouncingScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
                   List<Recording> audioDataList =
                       playlistManager.getAudioDataList();
@@ -52,7 +54,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   return GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(
+                        CupertinoPageRoute(
                           builder: (context) => RecordingPlayer(
                             playlist: playlistManager.getPlaylist(),
                             audioDataList: audioDataList,
@@ -72,21 +74,40 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               size: 40,
                               color: widget.show.bgColor,
                             ),
-                            const SizedBox(width: 20),
                             Expanded(
-                              child: SingleChildScrollView(
-                                padding: const EdgeInsets.only(right: 20),
-                                scrollDirection: Axis.horizontal,
-                                child: Text(
-                                  audioDataList[index].title,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                              child: ShaderMask(
+                                shaderCallback: (Rect bounds) {
+                                  return LinearGradient(
+                                    stops: const [0.0, 0.05, 0.9, 1.0],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.white.withOpacity(1.0),
+                                      Colors.white.withOpacity(1.0),
+                                      Colors.transparent
+                                    ],
+                                  ).createShader(bounds);
+                                },
+                                blendMode: BlendMode.dstIn,
+                                child: SingleChildScrollView(
+                                  padding: const EdgeInsets.only(
+                                    left: 14.0,
+                                    right: 20.0,
+                                  ),
+                                  physics: const BouncingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  child: Text(
+                                    audioDataList[index].title,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 20),
+                            const SizedBox(width: 20.0)
                           ],
                         ),
                         divideBetween(audioDataList.length, index),
@@ -118,7 +139,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       body: Column(
         children: [
           //const SizedBox(height: 20),
-          const Spacer(flex: 1),
+          const Spacer(flex: 2),
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Hero(
@@ -140,18 +161,39 @@ class _PlaylistPageState extends State<PlaylistPage> {
             ),
           ),
           //const SizedBox(height: 20),
-          const Spacer(flex: 1),
-          SizedBox(
-            height: 70,
-            width: width - 50,
-            child: SingleChildScrollView(
-              child: Text(
-                widget.show.description,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white),
+          const Spacer(flex: 2),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: height * 0.1 < 100 ? 80 : height * 0.1,
+              maxWidth: width - 50,
+            ),
+            child: ShaderMask(
+              shaderCallback: (Rect bounds) {
+                return LinearGradient(
+                  stops: const [0.0, 0.1, 0.8, 1.0],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.white.withOpacity(1.0),
+                    Colors.white.withOpacity(1.0),
+                    Colors.transparent
+                  ],
+                ).createShader(bounds);
+              },
+              blendMode: BlendMode.dstIn,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(top: 10.0, bottom: 14.0),
+                child: Text(
+                  widget.show.description,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ),
+
           const Spacer(
             flex: 1,
           ),
