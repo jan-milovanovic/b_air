@@ -4,7 +4,6 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:pediatko/authenticator.dart';
-import 'package:pediatko/constants/functions.dart';
 import 'package:pediatko/modals/data_provider.dart';
 import 'package:provider/provider.dart';
 
