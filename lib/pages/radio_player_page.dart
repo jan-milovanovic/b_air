@@ -98,45 +98,41 @@ class _RadioState extends State<RadioPlayerPage> {
                   } else {
                     final metadata = state!.currentSource!.tag as MediaItem;
 
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child:
-                                  loadImageOrFiller(metadata.artUri, iconSize),
-                            ),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(32.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: loadImageOrFiller(metadata.artUri, iconSize),
                           ),
-                          Text(
-                            "V ŽIVO",
-                            style: TextStyle(
-                              color: primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        ),
+                        Text(
+                          "V ŽIVO",
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const SizedBox(height: 10.0),
-                          Text(
-                            metadata.title,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 10.0),
+                        Text(
+                          metadata.title,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const SizedBox(height: 5.0),
-                          Text(
-                            metadata.displaySubtitle!,
-                            style: const TextStyle(
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 5.0),
+                        Text(
+                          metadata.displaySubtitle!,
+                          style: const TextStyle(
+                            fontSize: 16,
                           ),
-                        ],
-                      ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     );
                   }
                 }),
