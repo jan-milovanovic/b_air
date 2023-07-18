@@ -7,10 +7,12 @@ class ControlButtons extends StatelessWidget {
   final AudioPlayer player;
   final bool isLive;
   final Color? color;
+  final double? height;
 
   const ControlButtons({
     required this.player,
     required this.isLive,
+    this.height,
     this.color,
     Key? key,
   }) : super(key: key);
@@ -18,6 +20,7 @@ class ControlButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color primaryColor = Theme.of(context).primaryColor;
+    double iconSize = height ?? MediaQuery.of(context).size.height * 0.15;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -28,7 +31,7 @@ class ControlButtons extends StatelessWidget {
             builder: (context, snapshot) => IconButton(
               icon: const Icon(Icons.skip_previous),
               color: color ?? primaryColor,
-              iconSize: 64.0,
+              iconSize: iconSize / 2,
               onPressed: player.hasPrevious ? player.seekToPrevious : null,
             ),
           ),
@@ -42,29 +45,29 @@ class ControlButtons extends StatelessWidget {
                 processingState == ProcessingState.buffering) {
               return Container(
                 margin: const EdgeInsets.all(8.0),
-                width: 64.0,
-                height: 64.0,
+                width: iconSize / 2,
+                height: iconSize / 2,
                 child: CircularProgressIndicator(color: color ?? primaryColor),
               );
             } else if (playing != true) {
               return IconButton(
                 icon: const Icon(Icons.play_circle_fill_rounded),
                 color: color ?? primaryColor,
-                iconSize: 128.0,
+                iconSize: iconSize,
                 onPressed: player.play,
               );
             } else if (processingState != ProcessingState.completed) {
               return IconButton(
                 icon: const Icon(Icons.pause_circle_filled_rounded),
                 color: color ?? primaryColor,
-                iconSize: 128.0,
+                iconSize: iconSize,
                 onPressed: player.pause,
               );
             } else {
               return IconButton(
                 icon: const Icon(Icons.replay_circle_filled_rounded),
                 color: color ?? primaryColor,
-                iconSize: 128.0,
+                iconSize: iconSize,
                 onPressed: () => player.seek(Duration.zero,
                     index: player.effectiveIndices!.first),
               );
@@ -77,7 +80,7 @@ class ControlButtons extends StatelessWidget {
             builder: (context, snapshot) => IconButton(
               icon: const Icon(Icons.skip_next),
               color: color ?? primaryColor,
-              iconSize: 64.0,
+              iconSize: iconSize / 2,
               onPressed: player.hasNext ? player.seekToNext : null,
             ),
           ),
