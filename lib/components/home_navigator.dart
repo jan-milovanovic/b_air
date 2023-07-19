@@ -66,6 +66,9 @@ class _HomeNavigatorState extends State<HomeNavigator> {
           leadingWidth: 70,
           actions: [
             IconButton(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 15.0, horizontal: 0.0),
+              alignment: Alignment.centerLeft,
               icon: Image.asset('assets/icons/ico-Logout.png'),
               onPressed: () => showDialog(
                 context: context,
@@ -76,8 +79,11 @@ class _HomeNavigatorState extends State<HomeNavigator> {
             ),
           ],
           leading: Padding(
-            padding: const EdgeInsets.all(13.0),
-            child: Image.asset('assets/rtvslo-logo.png'),
+            padding: const EdgeInsets.symmetric(vertical: 14.0),
+            child: Image.asset(
+              'assets/rtvslo-logo.png',
+              alignment: const Alignment(0.4, 0),
+            ),
           ),
         ),
         backgroundColor: Colors.white,
