@@ -114,79 +114,73 @@ class _RecordingState extends State<RecordingPlayer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: widget.show.bgColor,
-                          ),
-                          height: iconSize,
-                          child: Hero(
-                            tag: 'imageUrl',
-                            transitionOnUserGestures: true,
-                            child: Image.network(
-                              widget.show.iconUrl,
-                            ),
-                          ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: widget.show.bgColor,
+                      ),
+                      height: iconSize,
+                      child: Hero(
+                        tag: 'imageUrl',
+                        transitionOnUserGestures: true,
+                        child: Image.network(
+                          widget.show.iconUrl,
                         ),
-                        const SizedBox(height: 10),
-                        Text(
-                          audioData.showName,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: widget.show.bgColor,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          audioData.title,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        SizedBox(
-                          //TODO: split between big, medium, and small displays
-                          height: height * 0.3 > 250 ? height * 0.3 : 200,
-                          child: ShaderMask(
-                            shaderCallback: (Rect bounds) {
-                              return LinearGradient(
-                                stops: const [0.0, 0.1, 0.8, 1.0],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.transparent,
-                                  Colors.white.withOpacity(1.0),
-                                  Colors.white.withOpacity(1.0),
-                                  Colors.transparent
-                                ],
-                              ).createShader(bounds);
-                            },
-                            blendMode: BlendMode.dstIn,
-                            child: SingleChildScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              padding: const EdgeInsets.only(
-                                top: 14.0,
-                                bottom: 32.0,
-                              ),
-                              child: Text(audioData.titleDescription),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 10),
+                    Text(
+                      audioData.showName,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: widget.show.bgColor,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      audioData.title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    Expanded(
+                      child: ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return LinearGradient(
+                            stops: const [0.0, 0.1, 0.8, 1.0],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.white.withOpacity(1.0),
+                              Colors.white.withOpacity(1.0),
+                              Colors.transparent
+                            ],
+                          ).createShader(bounds);
+                        },
+                        blendMode: BlendMode.dstIn,
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.only(
+                            top: 14.0,
+                            bottom: 32.0,
+                          ),
+                          child: Text(audioData.titleDescription),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             Center(
