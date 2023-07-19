@@ -45,8 +45,8 @@ class ControlButtons extends StatelessWidget {
                 processingState == ProcessingState.buffering) {
               return Container(
                 margin: const EdgeInsets.all(8.0),
-                width: iconSize / 2,
-                height: iconSize / 2,
+                width: iconSize,
+                height: iconSize,
                 child: CircularProgressIndicator(color: color ?? primaryColor),
               );
             } else if (playing != true) {
